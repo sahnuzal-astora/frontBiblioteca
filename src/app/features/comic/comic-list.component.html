@@ -1,0 +1,82 @@
+<div class="comic-list">
+  <div class="card">
+    <div class="card-header">
+      <h2>Gestión de Cómics</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">➕ Nuevo Cómic</button>
+    </div>
+
+    <div class="filters">
+      <input
+        type="text"
+        placeholder="Buscar por ID"
+        [(ngModel)]="filtroIdComic"
+        (input)="filtrarComics()"
+      />
+      <input
+        type="text"
+        placeholder="Buscar por título"
+        [(ngModel)]="filtroTitulo"
+        (input)="filtrarComics()"
+      />
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Ilustrador</th>
+          <th>Editorial</th>
+          <th>Volumen</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let comic of comicsFiltrados">
+          <td>{{ comic.idComic }}</td>
+          <td>{{ comic.titulo }}</td>
+          <td>{{ comic.ilustrador }}</td>
+          <td>{{ comic.editorial }}</td>
+          <td>{{ comic.volumen }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" (click)="openEditModal(comic)">✏️</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteComic(comic.idComic)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal-content animate">
+      <h3>{{ isEditMode ? 'Editar Cómic' : 'Nuevo Cómic' }}</h3>
+      <form (ngSubmit)="saveComic()">
+        <div class="form-group">
+          <label for="titulo">Título</label>
+          <input id="titulo" name="titulo" type="text" [(ngModel)]="comicForm.titulo" required />
+        </div>
+
+        <div class="form-group">
+          <label for="ilustrador">Ilustrador</label>
+          <input id="ilustrador" name="ilustrador" type="text" [(ngModel)]="comicForm.ilustrador" required />
+        </div>
+
+        <div class="form-group">
+          <label for="editorial">Editorial</label>
+          <input id="editorial" name="editorial" type="text" [(ngModel)]="comicForm.editorial" required />
+        </div>
+
+        <div class="form-group">
+          <label for="volumen">Volumen</label>
+          <input id="volumen" name="volumen" type="number" [(ngModel)]="comicForm.volumen" required />
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Actualizar' : 'Guardar' }}</button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

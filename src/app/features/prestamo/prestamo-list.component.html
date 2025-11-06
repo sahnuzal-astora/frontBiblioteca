@@ -1,0 +1,59 @@
+<div class="prestamo-list">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Gestión de Préstamos</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">Nuevo Préstamo</button>
+    </div>
+
+    <div class="filters">
+      <input
+        type="text"
+        placeholder="Filtrar por ID préstamo"
+        [(ngModel)]="filtroIdprestamo"
+        (input)="filtrarPrestamos()"
+      />
+      <input
+        type="text"
+        placeholder="Filtrar por UUID Usuario"
+        [(ngModel)]="filtroUUIDUsuario"
+        (input)="filtrarPrestamos()"
+      />
+    </div>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID Préstamo</th>
+          <th>UUID Usuario</th>
+          
+          <th>UUID Producto</th>
+          <th>Fecha Préstamo</th>
+          
+          <th>Estado</th>
+          
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let prestamo of prestamosFiltrados">
+          <td>{{ prestamo.idprestamo }}</td>
+          <td>{{ prestamo.uuidUsuario }}</td>
+          
+          <td>{{ prestamo.material }}</td>
+          <td>{{ prestamo.fechaPrestamo | date: 'yyyy-MM-dd' }}</td>
+          
+          <td>
+            <span
+              [class.text-success]="prestamo.estado === 'Devuelto'"
+              [class.text-danger]="prestamo.estado === 'Pendiente'">
+              {{ prestamo.estado }}
+            </span>
+          </td>
+          <td>
+           
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+

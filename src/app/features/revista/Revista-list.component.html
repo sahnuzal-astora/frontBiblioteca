@@ -1,0 +1,70 @@
+<div class="Revista-list">
+  <div class="card">
+    <div class="card-header">
+      <h2>Gestión de Periódicos</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">➕ Nuevo Periódico</button>
+    </div>
+
+    <div class="filters">
+      <input
+        type="text"
+        placeholder="Buscar por ID"
+        [(ngModel)]="filtroIdRevista"
+        (input)="filtrarRevistas()"
+      />
+      <input
+        type="text"
+        placeholder="Buscar por edición"
+        [(ngModel)]="filtroEdicion"
+        (input)="filtrarRevistas()"
+      />
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Edición</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let Revista of RevistasFiltrados">
+          <td>{{ Revista.idRevista }}</td>
+          <td>{{ Revista.edicion }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" (click)="openEditModal(Revista)">✏️</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteRevista(Revista.idRevista)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal-content animate">
+      <h3>{{ isEditMode ? 'Editar Periódico' : 'Nuevo Periódico' }}</h3>
+      <form (ngSubmit)="saveRevista()">
+
+        <div class="form-group">
+          <label for="edicion">Edición</label>
+          <input
+            id="edicion"
+            name="edicion"
+            type="text"
+            [(ngModel)]="RevistaForm.edicion"
+            required
+          />
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">
+            {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

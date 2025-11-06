@@ -1,0 +1,80 @@
+<div class="mapa-list">
+  <div class="card">
+    <div class="card-header">
+      <h2>Gestión de Mapas</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">➕ Nuevo Mapa</button>
+    </div>
+
+    <div class="filters">
+      <input
+        type="text"
+        placeholder="Buscar por ID"
+        [(ngModel)]="filtroIdMapa"
+        (input)="filtrarMapas()"
+      />
+      <input
+        type="text"
+        placeholder="Buscar por región"
+        [(ngModel)]="filtroRegion"
+        (input)="filtrarMapas()"
+      />
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Región</th>
+          <th>Escala</th>
+          <th>Tipo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let mapa of mapasFiltrados">
+          <td>{{ mapa.idMapa }}</td>
+          <td>{{ mapa.region }}</td>
+          <td>{{ mapa.escala }}</td>
+          <td>{{ mapa.tipo }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" (click)="openEditModal(mapa)">✏️</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteMapa(mapa.idMapa)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal-content animate">
+      <h3>{{ isEditMode ? 'Editar Mapa' : 'Nuevo Mapa' }}</h3>
+      <form (ngSubmit)="saveMapa()">
+        <div class="form-group">
+          <label for="region">Región</label>
+          <input id="region" name="region" type="text" [(ngModel)]="mapaForm.region" required />
+        </div>
+
+        <div class="form-group">
+          <label for="escala">Escala</label>
+          <input id="escala" name="escala" type="text" [(ngModel)]="mapaForm.escala" required />
+        </div>
+
+        <div class="form-group">
+          <label for="tipo">Tipo</label>
+          <select id="tipo" name="tipo" [(ngModel)]="mapaForm.tipo" required>
+            <option value="Político">Político</option>
+            <option value="Físico">Físico</option>
+            <option value="Climático">Climático</option>
+            <option value="Topográfico">Topográfico</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Actualizar' : 'Guardar' }}</button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

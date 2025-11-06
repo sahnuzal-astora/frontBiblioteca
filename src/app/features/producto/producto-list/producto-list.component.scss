@@ -1,0 +1,114 @@
+.producto-list {
+  .card {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 1000px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #ffffff;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+
+    h2 {
+      color: #2b2b2b;
+      font-weight: 600;
+    }
+
+    .btn-success {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #45a049;
+      }
+    }
+  }
+
+  .filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+
+    input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      transition: border-color 0.2s;
+
+      &:focus {
+        border-color: #4CAF50;
+        outline: none;
+      }
+    }
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f8f9fa;
+      text-align: left;
+      color: #333;
+    }
+
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    td {
+      vertical-align: middle;
+    }
+  }
+
+  .btn {
+    margin: 0 4px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+
+    &.btn-edit {
+      background-color: #2196F3;
+      color: white;
+
+      &:hover {
+        background-color: #1976D2;
+      }
+    }
+
+    &.btn-delete {
+      background-color: #f44336;
+      color: white;
+
+      &:hover {
+        background-color: #d32f2f;
+      }
+    }
+  }
+
+  .text-available {
+    color: green;
+    font-weight: 500;
+  }
+
+  .text-unavailable {
+    color: red;
+    font-weight: 500;
+  }
+}

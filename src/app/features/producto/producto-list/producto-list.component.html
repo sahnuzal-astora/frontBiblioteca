@@ -1,0 +1,122 @@
+<div class="producto-list">
+  <div class="card">
+    <div class="card-header">
+      <h2>Gestión de Productos</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">Nuevo Producto</button>
+    </div>
+
+    <div class="filters">
+      <input
+        type="text"
+        placeholder="Buscar por ID"
+        [(ngModel)]="filtroIdProducto"
+        (input)="filtrarProductos()"
+      />
+      <input
+        type="text"
+        placeholder="Buscar por título"
+        [(ngModel)]="filtroTitulo"
+        (input)="filtrarProductos()"
+      />
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID Producto</th>
+          <th>Título</th>
+          <th>Autor</th>
+          <th>Año</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let producto of productosFiltrados">
+          <td>{{ producto.idProducto }}</td>
+          <td>{{ producto.titulo }}</td>
+          <td>{{ producto.autor }}</td>
+          <td>{{ producto.anio }}</td>
+          <td>{{ producto.estado }}</td>
+          <td>
+            <button
+              class="btn btn-warning btn-sm"
+              (click)="openEditModal(producto)"
+            >
+              Editar
+            </button>
+            <button
+              class="btn btn-danger btn-sm"
+              (click)="deleteProducto(producto.idProducto)"
+            >
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Modal -->
+    <div class="modal" *ngIf="showModal">
+      <div class="modal-content">
+        <h3>{{ isEditMode ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
+        <form #productoFormRef="ngForm" (ngSubmit)="saveProducto()">
+          <div class="form-group">
+            <label for="titulo">Título</label>
+            <input
+              id="titulo"
+              name="titulo"
+              type="text"
+              [(ngModel)]="productoForm.titulo"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="autor">Autor</label>
+            <input
+              id="autor"
+              name="autor"
+              type="text"
+              [(ngModel)]="productoForm.autor"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="anio">Año</label>
+            <input
+              id="anio"
+              name="anio"
+              type="number"
+              [(ngModel)]="productoForm.anio"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="estado">Estado</label>
+            <select
+              id="estado"
+              name="estado"
+              [(ngModel)]="productoForm.estado"
+              required
+            >
+              <option value="Disponible">Disponible</option>
+              <option value="No disponible">No disponible</option>
+            </select>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">
+              {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+            </button>
+            <button class="btn btn-secondary" type="button" (click)="closeModal()">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

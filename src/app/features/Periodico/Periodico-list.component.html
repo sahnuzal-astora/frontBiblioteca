@@ -1,0 +1,70 @@
+<div class="Periodico-list">
+  <div class="card">
+    <div class="card-header">
+      <h2>Gestión de Periódicos</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">➕ Nuevo Periódico</button>
+    </div>
+
+    <div class="filters">
+      <input
+        type="text"
+        placeholder="Buscar por ID"
+        [(ngModel)]="filtroIdPeriodico"
+        (input)="filtrarPeriodicos()"
+      />
+      <input
+        type="text"
+        placeholder="Buscar por fecha"
+        [(ngModel)]="filtroFechaPublicacion"
+        (input)="filtrarPeriodicos()"
+      />
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha de Publicación</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let Periodico of PeriodicosFiltrados">
+          <td>{{ Periodico.idPeriodico }}</td>
+          <td>{{ Periodico.fechaPublicacion }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" (click)="openEditModal(Periodico)">✏️</button>
+            <button class="btn btn-danger btn-sm" (click)="deletePeriodico(Periodico.idPeriodico)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal-content animate">
+      <h3>{{ isEditMode ? 'Editar Periódico' : 'Nuevo Periódico' }}</h3>
+      <form (ngSubmit)="savePeriodico()">
+
+        <div class="form-group">
+          <label for="fechaPublicacion">Fecha de Publicación</label>
+          <input
+            id="fechaPublicacion"
+            name="fechaPublicacion"
+            type="date"
+            [(ngModel)]="PeriodicoForm.fechaPublicacion"
+            required
+          />
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">
+            {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

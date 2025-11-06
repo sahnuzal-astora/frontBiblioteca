@@ -1,0 +1,86 @@
+<div class="audiolibro-list">
+  <div class="card">
+    <div class="card-header">
+      <h2>Gestión de Audiolibros</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">➕ Nuevo Audiolibro</button>
+    </div>
+
+    <div class="filters">
+      <input
+        type="text"
+        placeholder="Buscar por ID"
+        [(ngModel)]="filtroIdAudiolibro"
+        (input)="filtrarAudiolibros()"
+      />
+      <input
+        type="text"
+        placeholder="Buscar por título"
+        [(ngModel)]="filtroTitulo"
+        (input)="filtrarAudiolibros()"
+      />
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Narrador</th>
+          <th>Duración</th>
+          <th>Formato</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let audiolibro of audiolibrosFiltrados">
+          <td>{{ audiolibro.idAudiolibro }}</td>
+          <td>{{ audiolibro.titulo }}</td>
+          <td>{{ audiolibro.narrador }}</td>
+          <td>{{ audiolibro.duracion }}</td>
+          <td>{{ audiolibro.formato }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" (click)="openEditModal(audiolibro)">✏️</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteAudiolibro(audiolibro.idAudiolibro)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal-content animate">
+      <h3>{{ isEditMode ? 'Editar Audiolibro' : 'Nuevo Audiolibro' }}</h3>
+      <form (ngSubmit)="saveAudiolibro()">
+        <div class="form-group">
+          <label for="titulo">Título</label>
+          <input id="titulo" name="titulo" type="text" [(ngModel)]="audiolibroForm.titulo" required />
+        </div>
+
+        <div class="form-group">
+          <label for="narrador">Narrador</label>
+          <input id="narrador" name="narrador" type="text" [(ngModel)]="audiolibroForm.narrador" required />
+        </div>
+
+        <div class="form-group">
+          <label for="duracion">Duración</label>
+          <input id="duracion" name="duracion" type="text" [(ngModel)]="audiolibroForm.duracion" required />
+        </div>
+
+        <div class="form-group">
+          <label for="formato">Formato</label>
+          <select id="formato" name="formato" [(ngModel)]="audiolibroForm.formato" required>
+            <option value="MP3">MP3</option>
+            <option value="WAV">WAV</option>
+            <option value="AAC">AAC</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Actualizar' : 'Guardar' }}</button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
