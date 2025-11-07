@@ -7,8 +7,6 @@ export interface Usuario {
   email: string;
   telefono: string;           // 🟢 nuevo campo
   activo: boolean;
-  fecha_creacion?: string;
-  fecha_actualizacion?: string;
 }
 
 /**
