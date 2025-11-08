@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { PrestamoService } from '../../core/services/prestamo.service';
+import { Prestamo, PrestamoFilters } from '../../shared/models/prestamo.models';
 
 @Component({
   selector: 'app-prestamo-list',
@@ -9,81 +11,58 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './prestamo-list.component.html',
   styleUrls: ['./prestamo-list.component.scss']
 })
-export class PrestamoListComponent {
-  prestamos = [
-    {
-      idprestamo: 1,
-      uuidUsuario: 'U001',
-      nombreUsuario: 'Juan Pérez',
-      material: 'Taladro',
-      fechaPrestamo: new Date('2025-10-01'),
-      fechaDevolucion: new Date('2025-10-10'),
-      estado: 'Pendiente'
+export class PrestamoListComponent implements OnInit {
+  prestamos: Prestamo[] = [];
+  prestamosFiltrados: Prestamo[] = [];
+  loading = false;
+
+  // 🔍 Filtros
+  filtroUsuarioId: string = '';
+  filtroProductoId: string = '';
+  filtroDevuelto: string = ''; // "", "true", "false"
+
+  constructor(private prestamoService: PrestamoService) {}
+
+  ngOnInit(): void {
+    this.cargarPrestamos();
+  }
+
+  /** 🔄 Cargar préstamos desde el servicio */
+  cargarPrestamos(): void {
+  this.loading = true;
+  const filters: PrestamoFilters = {};
+  if (this.filtroUsuarioId) filters.usuario_id = this.filtroUsuarioId;
+  if (this.filtroProductoId) filters.producto_id = this.filtroProductoId;
+  if (this.filtroDevuelto === 'true') filters.devuelto = true;
+  if (this.filtroDevuelto === 'false') filters.devuelto = false;
+
+  this.prestamoService.getPrestamos({ page: 1, limit: 100 }, filters).subscribe({
+    next: (res) => {
+      // si res tiene data
+      if ('data' in res) {
+        this.prestamos = res.data;
+      } else {
+        this.prestamos = res as Prestamo[];
+      }
+      this.prestamosFiltrados = [...this.prestamos];
+      this.loading = false;
     },
-    {
-      idprestamo: 2,
-      uuidUsuario: 'U002',
-      nombreUsuario: 'María Gómez',
-      material: 'Martillo',
-      fechaPrestamo: new Date('2025-10-05'),
-      fechaDevolucion: new Date('2025-10-12'),
-      estado: 'Devuelto'
+    error: (err) => {
+      console.error('Error al cargar préstamos:', err);
+      this.loading = false;
     }
-  ];
-
-  prestamosFiltrados = [...this.prestamos];
-  filtroIdprestamo = '';
-  filtroUUIDUsuario = '';
-
-  showModal = false;
-  isEditMode = false;
-  prestamoForm: any = {};
-
-  // 🔍 Filtro dinámico
-  filtrarPrestamos() {
-    const id = this.filtroIdprestamo.toString().toLowerCase();
-    const uuid = this.filtroUUIDUsuario.toLowerCase();
-
-    this.prestamosFiltrados = this.prestamos.filter(p =>
-      p.idprestamo.toString().includes(id) &&
-      p.uuidUsuario.toLowerCase().includes(uuid)
-    );
+  });
   }
 
-  // 🧾 Modal
-  openCreateModal() {
-    this.prestamoForm = { estado: 'Pendiente' };
-    this.isEditMode = false;
-    this.showModal = true;
-  }
 
-  openEditModal(prestamo: any) {
-    this.prestamoForm = { ...prestamo };
-    this.isEditMode = true;
-    this.showModal = true;
-  }
-
-  closeModal() {
-    this.showModal = false;
-  }
-
-  savePrestamo() {
-    if (this.isEditMode) {
-      const index = this.prestamos.findIndex(p => p.idprestamo === this.prestamoForm.idprestamo);
-      if (index !== -1) this.prestamos[index] = { ...this.prestamoForm };
-    } else {
-      const nuevo = { ...this.prestamoForm, idprestamo: Date.now() };
-      this.prestamos.push(nuevo);
-    }
-    this.closeModal();
-    this.filtrarPrestamos();
-  }
-
-  deletePrestamo(id: number) {
-    if (confirm('¿Seguro que deseas eliminar este préstamo?')) {
-      this.prestamos = this.prestamos.filter(p => p.idprestamo !== id);
-      this.filtrarPrestamos();
-    }
+  /** 🔍 Filtrar en memoria */
+  onFilterChange(): void {
+    this.prestamosFiltrados = this.prestamos.filter(p => {
+      const matchUsuario = this.filtroUsuarioId ? p.usuario_id.includes(this.filtroUsuarioId) : true;
+      const matchProducto = this.filtroProductoId ? p.producto_id.includes(this.filtroProductoId) : true;
+      const matchDevuelto = this.filtroDevuelto === '' ? true :
+        p.devuelto === (this.filtroDevuelto === 'true');
+      return matchUsuario && matchProducto && matchDevuelto;
+    });
   }
 }
-

@@ -1,59 +1,63 @@
 <div class="prestamo-list">
   <div class="card">
-    <div class="card-header">
-      <h2 class="card-title">Gestión de Préstamos</h2>
-      <button class="btn btn-success" (click)="openCreateModal()">Nuevo Préstamo</button>
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h2>Gestión de Préstamos</h2>
     </div>
 
-    <div class="filters">
+    <!-- 🔍 Filtro -->
+    <div class="filter-bar mt-2 d-flex gap-2">
       <input
         type="text"
-        placeholder="Filtrar por ID préstamo"
-        [(ngModel)]="filtroIdprestamo"
-        (input)="filtrarPrestamos()"
+        placeholder="Filtrar por Usuario ID"
+        [(ngModel)]="filtroUsuarioId"
+        (input)="onFilterChange()"
+        class="form-control"
       />
       <input
         type="text"
-        placeholder="Filtrar por UUID Usuario"
-        [(ngModel)]="filtroUUIDUsuario"
-        (input)="filtrarPrestamos()"
+        placeholder="Filtrar por Producto ID"
+        [(ngModel)]="filtroProductoId"
+        (input)="onFilterChange()"
+        class="form-control"
       />
+      <select [(ngModel)]="filtroDevuelto" (change)="onFilterChange()" class="form-control">
+        <option value="">Todos</option>
+        <option value="true">Devueltos</option>
+        <option value="false">Pendientes</option>
+      </select>
     </div>
 
-    <table class="table table-striped">
+    <!-- 📋 Tabla -->
+    <table class="table table-striped mt-3">
       <thead>
         <tr>
           <th>ID Préstamo</th>
-          <th>UUID Usuario</th>
-          
-          <th>UUID Producto</th>
+          <th>ID Usuario</th>
+          <th>ID Producto</th>
           <th>Fecha Préstamo</th>
-          
-          <th>Estado</th>
-          
+          <th>Devuelto</th>
         </tr>
       </thead>
+
       <tbody>
         <tr *ngFor="let prestamo of prestamosFiltrados">
-          <td>{{ prestamo.idprestamo }}</td>
-          <td>{{ prestamo.uuidUsuario }}</td>
-          
-          <td>{{ prestamo.material }}</td>
-          <td>{{ prestamo.fechaPrestamo | date: 'yyyy-MM-dd' }}</td>
-          
+          <td>{{ prestamo.id_prestamo }}</td>
+          <td>{{ prestamo.usuario_id }}</td>
+          <td>{{ prestamo.producto_id }}</td>
+          <td>{{ prestamo.fecha_prestamo | date:'yyyy-MM-dd' }}</td>
           <td>
-            <span
-              [class.text-success]="prestamo.estado === 'Devuelto'"
-              [class.text-danger]="prestamo.estado === 'Pendiente'">
-              {{ prestamo.estado }}
+            <span [class.text-success]="prestamo.devuelto" [class.text-danger]="!prestamo.devuelto">
+              {{ prestamo.devuelto ? 'Sí' : 'No' }}
             </span>
           </td>
-          <td>
-           
-          </td>
+        </tr>
+
+        <tr *ngIf="prestamosFiltrados.length === 0">
+          <td colspan="5" class="text-center text-muted">No se encontraron préstamos</td>
         </tr>
       </tbody>
     </table>
+
+    <div *ngIf="loading" class="mt-2">Cargando préstamos...</div>
   </div>
 </div>
-
