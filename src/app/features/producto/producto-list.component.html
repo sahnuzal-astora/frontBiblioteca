@@ -5,18 +5,18 @@
       <button class="btn btn-success" (click)="openCreateModal()">➕ Nuevo Producto</button>
     </div>
 
-    <!-- 🔍 Filtro -->
+    <!-- 🔍 Barra de búsqueda -->
     <div class="filter-bar mt-2">
       <input
         type="text"
-        placeholder="Filtrar por título"
-        [(ngModel)]="filtroTitulo"
+        placeholder="Buscar por título o ID"
+        [(ngModel)]="filtroBusqueda"
         (input)="onFilterChange()"
         class="form-control"
       />
     </div>
 
-    <!-- 📋 Tabla -->
+    <!-- 📋 Tabla de productos -->
     <table class="table table-striped mt-3">
       <thead>
         <tr>
@@ -36,7 +36,10 @@
           <td>{{ producto.autor }}</td>
           <td>{{ producto.anio }}</td>
           <td>
-            <span [class.text-success]="producto.disponible" [class.text-danger]="!producto.disponible">
+            <span
+              [class.text-success]="producto.disponible"
+              [class.text-danger]="!producto.disponible"
+            >
               {{ producto.disponible ? 'Sí' : 'No' }}
             </span>
           </td>
@@ -54,7 +57,12 @@
   </div>
 
   <!-- 🪟 Modal -->
-  <div class="modal fade show d-block" *ngIf="showModal" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+  <div
+    class="modal fade show d-block"
+    *ngIf="showModal"
+    tabindex="-1"
+    style="background-color: rgba(0, 0, 0, 0.5);"
+  >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content p-4">
         <h3>{{ isEditMode ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
@@ -63,28 +71,69 @@
         <form [formGroup]="productoForm" (ngSubmit)="saveProducto()">
           <div class="form-group">
             <label for="titulo">Título</label>
-            <input id="titulo" type="text" formControlName="titulo" class="form-control" required />
+            <input
+              id="titulo"
+              type="text"
+              formControlName="titulo"
+              class="form-control"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="autor">Autor</label>
-            <input id="autor" type="text" formControlName="autor" class="form-control" required />
+            <input
+              id="autor"
+              type="text"
+              formControlName="autor"
+              class="form-control"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="anio">Año</label>
-            <input id="anio" type="number" formControlName="anio" class="form-control" required />
+            <input
+              id="anio"
+              type="number"
+              formControlName="anio"
+              class="form-control"
+              required
+            />
           </div>
 
           <div class="form-check mt-2">
-            <input id="disponible" type="checkbox" class="form-check-input" formControlName="disponible" />
+            <input
+              id="disponible"
+              type="checkbox"
+              class="form-check-input"
+              formControlName="disponible"
+            />
             <label for="disponible" class="form-check-label">Disponible</label>
           </div>
 
           <!-- Solo al crear -->
           <div class="form-group mt-3" *ngIf="!isEditMode">
             <label for="id_usuario_crea">ID Usuario Creador</label>
-            <input id="id_usuario_crea" type="text" formControlName="id_usuario_crea" class="form-control" required />
+            <input
+              id="id_usuario_crea"
+              type="text"
+              formControlName="id_usuario_crea"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <!-- Solo al editar -->
+          <div class="form-group mt-3" *ngIf="isEditMode">
+            <label for="id_usuario_edita">ID Usuario Editor</label>
+            <input
+              id="id_usuario_edita"
+              type="text"
+              formControlName="id_usuario_edita"
+              class="form-control"
+              required
+            />
           </div>
 
           <!-- Botones -->
@@ -92,7 +141,9 @@
             <button type="submit" class="btn btn-primary">
               {{ isEditMode ? 'Actualizar' : 'Guardar' }}
             </button>
-            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">
+              Cancelar
+            </button>
           </div>
         </form>
       </div>

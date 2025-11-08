@@ -16,8 +16,8 @@ export class ProductoListComponent implements OnInit {
   productosFiltrados: Producto[] = [];
   loading = false;
 
-  // 🔍 Filtro
-  filtroTitulo: string = '';
+  // 🔍 Filtro (por título o ID)
+  filtroBusqueda: string = '';
 
   // 🪟 Control modal
   showModal = false;
@@ -35,7 +35,8 @@ export class ProductoListComponent implements OnInit {
       autor: ['', Validators.required],
       anio: [new Date().getFullYear(), [Validators.required, Validators.min(0)]],
       disponible: [true],
-      id_usuario_crea: [''] // solo requerido al crear
+      id_usuario_crea: [''],
+      id_usuario_edita: [''] // solo requerido al editar
     });
   }
 
@@ -59,15 +60,18 @@ export class ProductoListComponent implements OnInit {
     });
   }
 
-  /** 🔍 Filtrar */
+  /** 🔍 Filtrar por título o ID */
   onFilterChange(): void {
-    const filtro = this.filtroTitulo.trim().toLowerCase();
+    const filtro = this.filtroBusqueda.trim().toLowerCase();
+
     if (!filtro) {
       this.productosFiltrados = [...this.productos];
       return;
     }
+
     this.productosFiltrados = this.productos.filter(p =>
-      p.titulo.toLowerCase().includes(filtro)
+      p.titulo.toLowerCase().includes(filtro) ||
+      p.id_producto.toLowerCase().includes(filtro)
     );
   }
 
@@ -80,7 +84,8 @@ export class ProductoListComponent implements OnInit {
       autor: '',
       anio: new Date().getFullYear(),
       disponible: true,
-      id_usuario_crea: ''
+      id_usuario_crea: '',
+      id_usuario_edita: ''
     });
     this.showModal = true;
   }
@@ -93,7 +98,8 @@ export class ProductoListComponent implements OnInit {
       titulo: producto.titulo,
       autor: producto.autor,
       anio: producto.anio,
-      disponible: producto.disponible
+      disponible: producto.disponible,
+      id_usuario_edita: '' // vacío al abrir el modal
     });
     this.showModal = true;
   }
@@ -104,7 +110,7 @@ export class ProductoListComponent implements OnInit {
     this.editingProducto = null;
   }
 
-  /** 💾 Guardar */
+  /** 💾 Guardar producto */
   saveProducto(): void {
     if (this.productoForm.invalid) {
       this.productoForm.markAllAsTouched();
@@ -114,12 +120,17 @@ export class ProductoListComponent implements OnInit {
     const formValue = this.productoForm.value;
 
     if (this.isEditMode && this.editingProducto) {
+      if (!formValue.id_usuario_edita) {
+        alert('⚠️ Debes ingresar el ID del usuario que edita');
+        return;
+      }
+
       const updateData: UpdateProductoRequest = {
         titulo: formValue.titulo,
         autor: formValue.autor,
         anio: formValue.anio,
         disponible: formValue.disponible,
-        id_usuario_edita: formValue.id_usuario_crea // usuario que edita
+        id_usuario_edita: formValue.id_usuario_edita
       };
 
       this.productoService.updateProducto(this.editingProducto.id_producto, updateData).subscribe({
@@ -139,7 +150,7 @@ export class ProductoListComponent implements OnInit {
         autor: formValue.autor,
         anio: formValue.anio,
         disponible: formValue.disponible,
-        id_usuario_crea: formValue.id_usuario_crea // usuario que crea
+        id_usuario_crea: formValue.id_usuario_crea
       };
 
       this.productoService.createProducto(createData).subscribe({
