@@ -22,7 +22,7 @@ export class UsuarioService {
   /**
    * Obtiene un usuario por ID
    */
-  getUsuarioById(id: number): Observable<ApiResponse<Usuario>> {
+  getUsuarioById(id: string): Observable<ApiResponse<Usuario>> {
     return this.apiService.get<Usuario>(`${this.endpoint}/${id}`);
   }
 
@@ -36,14 +36,14 @@ export class UsuarioService {
   /**
    * Actualiza un usuario existente
    */
-  updateUsuario(id: number, usuario: UpdateUsuarioRequest): Observable<ApiResponse<Usuario>> {
+  updateUsuario(id: string, usuario: UpdateUsuarioRequest): Observable<ApiResponse<Usuario>> {
     return this.apiService.put<Usuario>(`${this.endpoint}/${id}`, usuario);
   }
 
   /**
    * Elimina un usuario
    */
-  deleteUsuario(id: number): Observable<ApiResponse<void>> {
+  deleteUsuario(id: string): Observable<ApiResponse<void>> {
     return this.apiService.delete<void>(`${this.endpoint}/${id}`);
   } 
 }
