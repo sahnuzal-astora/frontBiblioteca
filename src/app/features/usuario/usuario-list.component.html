@@ -1,0 +1,119 @@
+<div class="usuario-list">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h2>Gestión de Usuarios</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">➕ Nuevo Usuario</button>
+    </div>
+
+    <!-- 🔍 Filtros -->
+    <div class="filter-bar">
+  <input
+    type="text"
+    placeholder="Filtrar por ID"
+    [(ngModel)]="filtroId"
+    (input)="onFilterChange()"
+    class="form-control"
+  />
+  
+</div>
+
+
+    <!-- 📋 Tabla -->
+    <table class="table table-striped mt-3">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+          <th>Activo</th>
+          <th>Admin</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let usuario of usuariosFiltrados">
+          <td>{{ usuario.idusuario }}</td>
+          <td>{{ usuario.nombre }}</td>
+          <td>{{ usuario.email }}</td>
+          <td>{{ usuario.telefono || '—' }}</td>
+          <td>
+            <span [class.text-success]="usuario.activo" [class.text-danger]="!usuario.activo">
+              {{ usuario.activo ? 'Sí' : 'No' }}
+            </span>
+          </td>
+          <td>
+            <span [class.text-primary]="usuario.es_admin" [class.text-muted]="!usuario.es_admin">
+              {{ usuario.es_admin ? 'Sí' : 'No' }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-warning btn-sm" (click)="openEditModal(usuario)">✏️</button>
+
+            <button class="btn btn-danger btn-sm" (click)="deleteUsuario(usuario.idusuario)">🗑️</button>
+          </td>
+        </tr>
+
+        <tr *ngIf="usuariosFiltrados.length === 0">
+          <td colspan="7" class="text-center text-muted">No se encontraron usuarios</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 🪟 Modal -->
+  <div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal-content animate">
+      <h3>{{ isEditMode ? 'Editar Usuario' : 'Nuevo Usuario' }}</h3>
+
+      <!-- ✅ FORMULARIO USANDO REACTIVE FORMS -->
+      <form [formGroup]="usuarioForm" (ngSubmit)="saveUsuario()">
+        
+        <!-- Nombre -->
+        <div class="form-group">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" type="text" formControlName="nombre" required />
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" type="email" formControlName="email" required />
+        </div>
+
+        <!-- Teléfono -->
+        <div class="form-group">
+          <label for="telefono">Teléfono</label>
+          <input id="telefono" type="text" formControlName="telefono" />
+        </div>
+
+        <!-- Contraseña (solo al crear) -->
+        <div class="form-group" *ngIf="!isEditMode">
+          <label for="contrasena">Contraseña</label>
+          <input id="contrasena" type="password" formControlName="contrasena_hash" required />
+        </div>
+
+        <!-- Activo -->
+        <div class="form-check">
+          <input id="activo" type="checkbox" class="form-check-input" formControlName="activo" />
+          <label for="activo" class="form-check-label">Activo</label>
+        </div>
+
+        <!-- Es administrador -->
+        <div class="form-check">
+          <input id="es_admin" type="checkbox" class="form-check-input" formControlName="es_admin" />
+          <label for="es_admin" class="form-check-label">Administrador</label>
+        </div>
+
+        <!-- Botones -->
+        <div class="actions mt-3">
+          <button type="submit" class="btn btn-primary">
+            {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

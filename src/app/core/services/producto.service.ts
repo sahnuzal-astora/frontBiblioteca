@@ -25,6 +25,9 @@ export class ProductoService {
   getProductoById(id: number): Observable<ApiResponse<Producto>> {
     return this.apiService.get<Producto>(`${this.endpoint}/${id}`);
   }
+  getProductoBytitulo(titulo: string): Observable<ApiResponse<Producto>> {
+    return this.apiService.get<Producto>(`${this.endpoint}/${titulo}`);
+  }
 
   /**
    * Crea un nuevo producto
@@ -47,17 +50,5 @@ export class ProductoService {
     return this.apiService.delete<void>(`${this.endpoint}/${id}`);
   }
 
-  /**
-   * Obtiene todos los productos activos (sin paginación)
-   */
-  getProductosActivos(): Observable<ApiResponse<Producto[]>> {
-    return this.apiService.get<Producto[]>(`${this.endpoint}/activos`);
-  }
-
-  /**
-   * Obtiene productos por categoría
-   */
-  getProductosByCategoria(categoriaId: number): Observable<ApiResponse<Producto[]>> {
-    return this.apiService.get<Producto[]>(`${this.endpoint}/categoria/${categoriaId}`);
-  }
+  
 }

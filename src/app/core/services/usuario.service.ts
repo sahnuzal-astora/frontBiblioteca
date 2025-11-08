@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ChangePasswordRequest, CreateUsuarioRequest, UpdateUsuarioRequest, Usuario, UsuarioFilters } from '../../shared/models/usuario.model';
+import { CreateUsuarioRequest, UpdateUsuarioRequest, Usuario, UsuarioFilters } from '../../shared/models/usuario.model';
 import { ApiResponse, PaginatedResponse, PaginationParams } from '../models/api-response.model';
 import { ApiService } from './api.service';
 
@@ -45,26 +45,5 @@ export class UsuarioService {
    */
   deleteUsuario(id: number): Observable<ApiResponse<void>> {
     return this.apiService.delete<void>(`${this.endpoint}/${id}`);
-  }
-
-  /**
-   * Cambia la contraseña de un usuario
-   */
-  changePassword(id: number, passwordData: ChangePasswordRequest): Observable<ApiResponse<void>> {
-    return this.apiService.post<void>(`${this.endpoint}/${id}/change-password`, passwordData);
-  }
-
-  /**
-   * Obtiene todos los usuarios activos (sin paginación)
-   */
-  getUsuariosActivos(): Observable<ApiResponse<Usuario[]>> {
-    return this.apiService.get<Usuario[]>(`${this.endpoint}/activos`);
-  }
-
-  /**
-   * Activa/desactiva un usuario
-   */
-  toggleUsuarioStatus(id: number, activo: boolean): Observable<ApiResponse<Usuario>> {
-    return this.apiService.patch<Usuario>(`${this.endpoint}/${id}/toggle-status`, { activo });
-  }
+  } 
 }

@@ -7,6 +7,7 @@ export interface Usuario {
   email: string;
   telefono: string;           // 🟢 nuevo campo
   activo: boolean;
+  es_admin: boolean;
 }
 
 /**
@@ -16,7 +17,9 @@ export interface CreateUsuarioRequest {
   email: string;
   password: string;
   nombre: string;
-  telefono?: string;  // ← opcional
+  telefono: string;  // ← opcional
+  esadmin: boolean;
+  contrasena_hash: string; 
 }
 
 
@@ -24,20 +27,13 @@ export interface CreateUsuarioRequest {
  * Modelo para actualizar un usuario
  */
 export interface UpdateUsuarioRequest {
-  nombre?: string;
-  email?: string;
-  telefono?: string;          // 🟢 nuevo campo
-  activo?: boolean;
-  password?: string;          // 🟢 opcional para permitir cambio
+  nombre: string;
+  email: string;
+  telefono: string;          // 🟢 nuevo campo
+  activo: boolean;
+  es_admin: boolean;          // 🟢 opcional para permitir cambio
 }
 
-/**
- * Modelo para cambiar contraseña
- */
-export interface ChangePasswordRequest {
-  current_password: string;
-  new_password: string;
-}
 
 /**
  * Modelo para filtros de usuarios

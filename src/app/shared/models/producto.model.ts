@@ -3,42 +3,32 @@
  */
 export interface Producto {
   id: number;
-  nombre: string;
-  descripcion?: string;
-  precio: number;
-  stock: number;
-  categoria_id: number;
-  categoria?: {
-    id: number;
-    nombre: string;
-  };
-  activo: boolean;
-  fecha_creacion: string;
-  fecha_actualizacion: string;
+  titulo: string;
+  autor: string;
+  anio:Date;
+  disponible: boolean;
 }
 
 /**
  * Modelo para crear un nuevo producto
  */
 export interface CreateProductoRequest {
-  nombre: string;
-  descripcion?: string;
-  precio: number;
-  stock: number;
-  categoria_id: number;
-  activo?: boolean;
+  autor: string;
+  anio: Date;
+  titulo: string;
+  disponible: boolean;
+  id_usuario_crea: number;
 }
 
 /**
  * Modelo para actualizar un producto
  */
 export interface UpdateProductoRequest {
-  nombre?: string;
-  descripcion?: string;
-  precio?: number;
-  stock?: number;
-  categoria_id?: number;
-  activo?: boolean;
+  titulo: string;
+  autor: string;
+  anio: Date;
+  disponible: boolean;
+  id_usuario_edita: number;
 }
 
 /**

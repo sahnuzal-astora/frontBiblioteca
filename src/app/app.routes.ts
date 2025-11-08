@@ -23,7 +23,7 @@ export const routes: Routes = [
   {
   path: 'usuario',
   loadComponent: () =>
-    import('./features/usuario/usuario-list/usuario-list.component')
+    import('./features/usuario/usuario-list.component')
       .then(m => m.UsuarioListComponent)
 },
   {
@@ -61,14 +61,14 @@ export const routes: Routes = [
   {
     path: 'periodico',
     loadComponent: () =>
-      import('./features/Periodico/periodico-list.component').then(
+      import('./features/Periodico/Periodico-list.component').then(
         (m) => m.PeriodicoListComponent
       ),
   },
   {
     path: 'revista',
     loadComponent: () =>
-      import('./features/revista/revista-list.component').then(
+      import('./features/revista/Revista-list.component').then(
         (m) => m.RevistaListComponent
       ),
   },
