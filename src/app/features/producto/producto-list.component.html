@@ -1,0 +1,201 @@
+<div class="producto-list container mt-4">
+  <div class="card shadow-sm">
+    <!-- 🧾 Encabezado -->
+    <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+      <h2 class="mb-0 fs-4">📦 Gestión de Productos</h2>
+      <button class="btn btn-light btn-sm fw-bold" (click)="openCreateModal()">
+        ➕ Nuevo Producto
+      </button>
+    </div>
+
+    <!-- 🔍 Barra de filtros -->
+    <div class="card-body">
+      <div class="filter-bar mb-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Buscar por ID o título..."
+          [(ngModel)]="filtroIdProducto"
+          (input)="filtrarProductos()"
+        />
+      </div>
+
+      <!-- ⏳ Indicador de carga -->
+      <div *ngIf="loading" class="text-center text-muted py-3">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Cargando productos...</p>
+      </div>
+
+      <!-- 📋 Tabla de productos -->
+      <div class="table-responsive" *ngIf="!loading">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Título</th>
+              <th>Autor</th>
+              <th>Año</th>
+              <th>Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let producto of productosFiltrados">
+              <td class="text-muted">{{ producto.id_producto }}</td>
+              <td>{{ producto.titulo }}</td>
+              <td>{{ producto.autor }}</td>
+              <td>{{ producto.anio }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [class.bg-success]="producto.disponible"
+                  [class.bg-danger]="!producto.disponible"
+                >
+                  {{ producto.disponible ? 'Disponible' : 'No disponible' }}
+                </span>
+              </td>
+              <td class="text-center">
+                <button
+                  class="btn btn-warning btn-sm me-1"
+                  (click)="openEditModal(producto)"
+                  title="Editar"
+                >
+                  ✏️
+                </button>
+                <button
+                  class="btn btn-danger btn-sm"
+                  (click)="deleteProducto(producto.id_producto)"
+                  title="Eliminar"
+                >
+                  🗑️
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="productosFiltrados.length === 0 && !loading">
+              <td colspan="6" class="text-center text-muted py-3">
+                No se encontraron productos
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🪟 Modal de creación/edición -->
+  <div
+    class="modal fade show d-block"
+    *ngIf="showModal"
+    tabindex="-1"
+    style="background-color: rgba(0,0,0,0.5);"
+    aria-modal="true"
+    role="dialog"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg rounded-3">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">
+            {{ isEditMode ? '✏️ Editar Producto' : '➕ Nuevo Producto' }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close btn-close-white"
+            aria-label="Close"
+            (click)="closeModal()"
+          ></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <form [formGroup]="productoForm" (ngSubmit)="saveProducto()">
+            <!-- Título -->
+            <div class="mb-3">
+              <label for="titulo" class="form-label">Título</label>
+              <input
+                id="titulo"
+                type="text"
+                formControlName="titulo"
+                class="form-control"
+                [class.is-invalid]="productoForm.get('titulo')?.invalid && productoForm.get('titulo')?.touched"
+                required
+              />
+              <div class="invalid-feedback">El título es obligatorio.</div>
+            </div>
+
+            <!-- Autor -->
+            <div class="mb-3">
+              <label for="autor" class="form-label">Autor</label>
+              <input
+                id="autor"
+                type="text"
+                formControlName="autor"
+                class="form-control"
+                [class.is-invalid]="productoForm.get('autor')?.invalid && productoForm.get('autor')?.touched"
+                required
+              />
+              <div class="invalid-feedback">El autor es obligatorio.</div>
+            </div>
+
+            <!-- Año -->
+            <div class="mb-3">
+              <label for="anio" class="form-label">Año</label>
+              <input
+                id="anio"
+                type="number"
+                formControlName="anio"
+                class="form-control"
+                [class.is-invalid]="productoForm.get('anio')?.invalid && productoForm.get('anio')?.touched"
+                required
+              />
+              <div class="invalid-feedback">El año es obligatorio.</div>
+            </div>
+
+            <!-- ID Usuario Crea (solo en creación) -->
+            <div class="mb-3" *ngIf="!isEditMode">
+              <label for="id_usuario_crea" class="form-label">ID Usuario Creador (UUID)</label>
+              <input
+                id="id_usuario_crea"
+                type="text"
+                formControlName="id_usuario_crea"
+                class="form-control"
+                placeholder="Ej: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                [class.is-invalid]="productoForm.get('id_usuario_crea')?.invalid && productoForm.get('id_usuario_crea')?.touched"
+                required
+              />
+              <div class="invalid-feedback">Debe ingresar un UUID válido.</div>
+            </div>
+
+            <!-- ID Usuario Edita (solo en edición) -->
+            <div class="mb-3" *ngIf="isEditMode">
+              <label for="id_usuario_edita" class="form-label">ID Usuario Editor (UUID)</label>
+              <input
+                id="id_usuario_edita"
+                type="text"
+                formControlName="id_usuario_edita"
+                class="form-control"
+                placeholder="Ej: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                [class.is-invalid]="productoForm.get('id_usuario_edita')?.invalid && productoForm.get('id_usuario_edita')?.touched"
+              />
+              <div class="invalid-feedback">Debe ingresar un UUID válido.</div>
+            </div>
+
+            <!-- Disponible -->
+            <div class="form-check mb-3">
+              <input id="disponible" type="checkbox" class="form-check-input" formControlName="disponible" />
+              <label for="disponible" class="form-check-label">Disponible</label>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-end gap-2">
+              <button type="submit" class="btn btn-primary">
+                {{ isEditMode ? '💾 Actualizar' : '✅ Guardar' }}
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

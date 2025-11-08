@@ -2,10 +2,10 @@
  * Modelo para la entidad Producto
  */
 export interface Producto {
-  id: number;
+  id_producto: string;
   titulo: string;
   autor: string;
-  anio:Date;
+  anio:number;
   disponible: boolean;
 }
 
@@ -14,21 +14,21 @@ export interface Producto {
  */
 export interface CreateProductoRequest {
   autor: string;
-  anio: Date;
+  anio: number;
   titulo: string;
   disponible: boolean;
-  id_usuario_crea: number;
+  id_usuario_crea: string;
 }
 
 /**
  * Modelo para actualizar un producto
  */
 export interface UpdateProductoRequest {
-  titulo: string;
-  autor: string;
-  anio: Date;
-  disponible: boolean;
-  id_usuario_edita: number;
+  titulo?: string;
+  autor?: string;
+  anio?: number;
+  disponible?: boolean;
+  id_usuario_edita: string;
 }
 
 /**

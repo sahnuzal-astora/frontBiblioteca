@@ -12,7 +12,7 @@ export const routes: Routes = [
   },
   {
   path: 'productos',
-  loadComponent: () => import('./features/producto/producto-list/producto-list.component')
+  loadComponent: () => import('./features/producto/producto-list.component')
     .then(m => m.ProductoListComponent)
   },
   {
@@ -21,11 +21,11 @@ export const routes: Routes = [
     .then(m => m.PrestamoListComponent)
   },
   {
-  path: 'usuario',
+  path: 'usuario',  
   loadComponent: () =>
     import('./features/usuario/usuario-list.component')
       .then(m => m.UsuarioListComponent)
-},
+  },
   {
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.authRoutes)

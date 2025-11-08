@@ -22,7 +22,7 @@ export class ProductoService {
   /**
    * Obtiene un producto por ID
    */
-  getProductoById(id: number): Observable<ApiResponse<Producto>> {
+  getProductoById(id: string): Observable<ApiResponse<Producto>> {
     return this.apiService.get<Producto>(`${this.endpoint}/${id}`);
   }
   getProductoBytitulo(titulo: string): Observable<ApiResponse<Producto>> {
@@ -39,14 +39,14 @@ export class ProductoService {
   /**
    * Actualiza un producto existente
    */
-  updateProducto(id: number, producto: UpdateProductoRequest): Observable<ApiResponse<Producto>> {
+  updateProducto(id: string, producto: UpdateProductoRequest): Observable<ApiResponse<Producto>> {
     return this.apiService.put<Producto>(`${this.endpoint}/${id}`, producto);
   }
 
   /**
    * Elimina un producto
    */
-  deleteProducto(id: number): Observable<ApiResponse<void>> {
+  deleteProducto(id: string): Observable<ApiResponse<void>> {
     return this.apiService.delete<void>(`${this.endpoint}/${id}`);
   }
 
