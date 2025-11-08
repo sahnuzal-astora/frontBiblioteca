@@ -71,7 +71,7 @@ export class UsuarioListComponent implements OnInit {
     }
 
     this.usuariosFiltrados = this.usuarios.filter(usuario =>
-      usuario.idusuario.toString().includes(idFiltro)
+      usuario.id_usuario.toString().includes(idFiltro)
     );
   }
 
@@ -138,7 +138,7 @@ export class UsuarioListComponent implements OnInit {
         es_admin: formValue.es_admin
       };
 
-      this.usuarioService.updateUsuario(this.editingUsuario.idusuario, updateData).subscribe({
+      this.usuarioService.updateUsuario(this.editingUsuario.id_usuario, updateData).subscribe({
         next: () => {
           this.cargarUsuarios();
           this.closeModal();

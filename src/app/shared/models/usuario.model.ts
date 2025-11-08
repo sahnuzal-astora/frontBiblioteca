@@ -2,7 +2,7 @@
  * Modelo para la entidad Usuario
  */
 export interface Usuario {
-  idusuario: string;          // 🟢 reemplaza 'id'
+  id_usuario: string;          // 🟢 reemplaza 'id'
   nombre: string;
   email: string;
   telefono: string;           // 🟢 nuevo campo

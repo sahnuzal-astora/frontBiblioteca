@@ -6,17 +6,15 @@
     </div>
 
     <!-- 🔍 Filtros -->
-    <div class="filter-bar">
-  <input
-    type="text"
-    placeholder="Filtrar por ID"
-    [(ngModel)]="filtroId"
-    (input)="onFilterChange()"
-    class="form-control"
-  />
-  
-</div>
-
+    <div class="filter-bar mt-2">
+      <input
+        type="text"
+        placeholder="Filtrar por ID"
+        [(ngModel)]="filtroId"
+        (input)="onFilterChange()"
+        class="form-control"
+      />
+    </div>
 
     <!-- 📋 Tabla -->
     <table class="table table-striped mt-3">
@@ -34,7 +32,7 @@
 
       <tbody>
         <tr *ngFor="let usuario of usuariosFiltrados">
-          <td>{{ usuario.idusuario }}</td>
+          <td>{{ usuario.id_usuario }}</td>
           <td>{{ usuario.nombre }}</td>
           <td>{{ usuario.email }}</td>
           <td>{{ usuario.telefono || '—' }}</td>
@@ -50,8 +48,7 @@
           </td>
           <td>
             <button class="btn btn-warning btn-sm" (click)="openEditModal(usuario)">✏️</button>
-
-            <button class="btn btn-danger btn-sm" (click)="deleteUsuario(usuario.idusuario)">🗑️</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteUsuario(usuario.id_usuario)">🗑️</button>
           </td>
         </tr>
 
@@ -63,57 +60,60 @@
   </div>
 
   <!-- 🪟 Modal -->
-  <div class="modal-backdrop" *ngIf="showModal">
-    <div class="modal-content animate">
-      <h3>{{ isEditMode ? 'Editar Usuario' : 'Nuevo Usuario' }}</h3>
+  <div class="modal fade show d-block" *ngIf="showModal" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-4">
+        <h3>{{ isEditMode ? 'Editar Usuario' : 'Nuevo Usuario' }}</h3>
 
-      <!-- ✅ FORMULARIO USANDO REACTIVE FORMS -->
-      <form [formGroup]="usuarioForm" (ngSubmit)="saveUsuario()">
-        
-        <!-- Nombre -->
-        <div class="form-group">
-          <label for="nombre">Nombre</label>
-          <input id="nombre" type="text" formControlName="nombre" required />
-        </div>
+        <!-- ✅ FORMULARIO USANDO REACTIVE FORMS -->
+        <form [formGroup]="usuarioForm" (ngSubmit)="saveUsuario()">
 
-        <!-- Email -->
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input id="email" type="email" formControlName="email" required />
-        </div>
+          <!-- Nombre -->
+          <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input id="nombre" type="text" formControlName="nombre" class="form-control" required />
+          </div>
 
-        <!-- Teléfono -->
-        <div class="form-group">
-          <label for="telefono">Teléfono</label>
-          <input id="telefono" type="text" formControlName="telefono" />
-        </div>
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" type="email" formControlName="email" class="form-control" required />
+          </div>
 
-        <!-- Contraseña (solo al crear) -->
-        <div class="form-group" *ngIf="!isEditMode">
-          <label for="contrasena">Contraseña</label>
-          <input id="contrasena" type="password" formControlName="contrasena_hash" required />
-        </div>
+          <!-- Teléfono -->
+          <div class="form-group">
+            <label for="telefono">Teléfono</label>
+            <input id="telefono" type="text" formControlName="telefono" class="form-control" />
+          </div>
 
-        <!-- Activo -->
-        <div class="form-check">
-          <input id="activo" type="checkbox" class="form-check-input" formControlName="activo" />
-          <label for="activo" class="form-check-label">Activo</label>
-        </div>
+          <!-- Contraseña (solo al crear) -->
+          <div class="form-group" *ngIf="!isEditMode">
+            <label for="contrasena">Contraseña</label>
+            <input id="contrasena" type="password" formControlName="contrasena_hash" class="form-control" required />
+          </div>
 
-        <!-- Es administrador -->
-        <div class="form-check">
-          <input id="es_admin" type="checkbox" class="form-check-input" formControlName="es_admin" />
-          <label for="es_admin" class="form-check-label">Administrador</label>
-        </div>
+          <!-- Activo -->
+          <div class="form-check mt-2">
+            <input id="activo" type="checkbox" class="form-check-input" formControlName="activo" />
+            <label for="activo" class="form-check-label">Activo</label>
+          </div>
 
-        <!-- Botones -->
-        <div class="actions mt-3">
-          <button type="submit" class="btn btn-primary">
-            {{ isEditMode ? 'Actualizar' : 'Guardar' }}
-          </button>
-          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
-        </div>
-      </form>
+          <!-- Es administrador -->
+          <div class="form-check">
+            <input id="es_admin" type="checkbox" class="form-check-input" formControlName="es_admin" />
+            <label for="es_admin" class="form-check-label">Administrador</label>
+          </div>
+
+          <!-- Botones -->
+          <div class="mt-3 d-flex justify-content-end gap-2">
+            <button type="submit" class="btn btn-primary">
+              {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+          </div>
+
+        </form>
+      </div>
     </div>
   </div>
 </div>
