@@ -1,86 +1,173 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+import { LibroService } from '../../core/services/libro.services';
+import { Libro, CreateLibroRequest, UpdateLibroRequest } from '../../shared/models/libro.model';
 
 @Component({
-  selector: 'app-Libro-list',
+  selector: 'app-libro-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './Libro-list.component.html',
-  styleUrls: ['./Libro-list.component.scss']
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  templateUrl: './libro-list.component.html',
+  styleUrls: ['./libro-list.component.scss']
 })
-export class LibroListComponent {
-  // Lista inicial
-  Libros = [
-    { idLibro: 1, titulo: 'El Principito', genero: 'Carlos Rivera', paginas: '2h 30min'},
-    { idLibro: 2, titulo: '1984', genero: 'Laura Torres', paginas: '9h 15min' },
-    { idLibro: 3, titulo: 'Moby Dick', genero: 'José García', paginas: '12h 45min' }
-  ];
+export class LibroListComponent implements OnInit {
 
-  LibrosFiltrados = [...this.Libros];
-  filtroTitulo = '';
-  filtroIdLibro = '';
+  libros: Libro[] = [];
+  librosFiltrados: Libro[] = [];
+
+  filtroIdLibro: string = '';
 
   showModal = false;
   isEditMode = false;
-  LibroForm: any = {};
+  editingLibro: Libro | null = null;
 
-  // 🔍 Filtra los Libros
-  filtrarLibros() {
-    const titulo = this.filtroTitulo.toLowerCase();
-    const id = this.filtroIdLibro.toString().toLowerCase();
+  libroForm: FormGroup;
 
-    this.LibrosFiltrados = this.Libros.filter(a =>
-      a.titulo.toLowerCase().includes(titulo) &&
-      a.idLibro.toString().includes(id)
+  constructor(
+    private libroService: LibroService,
+    private fb: FormBuilder
+  ) {
+    this.libroForm = this.fb.group({
+      genero: ['', Validators.required],
+      paginas: [0, [Validators.required, Validators.min(1)]],
+      producto_id: ['', Validators.required],
+      id_usuario_crea: [''],
+      id_usuario_edita: ['']
+    });
+  }
+
+  ngOnInit(): void {
+    this.cargarLibros();
+  }
+
+  cargarLibros(): void {
+    this.libroService.getLibros({ page: 1, limit: 100 }).subscribe({
+      next: (res: any) => {
+        this.libros = res.data || res;
+        this.librosFiltrados = [...this.libros];
+      },
+      error: (err) => console.error('Error al cargar libros:', err)
+    });
+  }
+
+  // ✅ Filtrar solo por ID
+  filtrarLibros(): void {
+    const filtro = this.filtroIdLibro.trim().toLowerCase();
+
+    if (!filtro) {
+      this.librosFiltrados = [...this.libros];
+      return;
+    }
+
+    this.librosFiltrados = this.libros.filter(l =>
+      l.id_libro.toLowerCase().includes(filtro)
     );
   }
 
-  // ➕ Crear nuevo Libro
-  openCreateModal() {
-    this.LibroForm = {};
+  // ➕ Crear nuevo
+  openCreateModal(): void {
     this.isEditMode = false;
+    this.editingLibro = null;
+
+    this.libroForm.reset({
+      genero: '',
+      paginas: 0,
+      producto_id: '',
+      id_usuario_crea: '',
+      id_usuario_edita: ''
+    });
+
     this.showModal = true;
   }
 
-  // ✏️ Editar Libro existente
-  openEditModal(Libro: any) {
-    this.LibroForm = { ...Libro };
+  // ✏️ Editar existente
+  openEditModal(libro: Libro): void {
     this.isEditMode = true;
+    this.editingLibro = libro;
+
+    this.libroForm.patchValue({
+      genero: libro.genero,
+      paginas: libro.paginas,
+      producto_id: libro.producto_id,
+      id_usuario_edita: ''
+    });
+
     this.showModal = true;
   }
 
-  // ❌ Cerrar modal
-  closeModal() {
+  closeModal(): void {
     this.showModal = false;
+    this.editingLibro = null;
   }
 
-  // 💾 Guardar (crear o actualizar)
-  saveLibro() {
-    if (this.isEditMode) {
-      const index = this.Libros.findIndex(a => a.idLibro === this.LibroForm.idLibro);
-      if (index !== -1) this.Libros[index] = { ...this.LibroForm };
+  saveLibro(): void {
+    if (this.libroForm.invalid) {
+      this.libroForm.markAllAsTouched();
+      return;
+    }
+
+    const value = this.libroForm.value;
+
+    // ✅ Modo edición
+    if (this.isEditMode && this.editingLibro) {
+
+      if (!value.id_usuario_edita) {
+        alert('Debe ingresar un UUID para id_usuario_edita');
+        return;
+      }
+
+      const updateData: UpdateLibroRequest = {
+        genero: value.genero,
+        paginas: value.paginas,
+        id_usuario_edita: value.id_usuario_edita
+      };
+
+      this.libroService.updateLibro(this.editingLibro.id_libro, updateData)
+        .subscribe({
+          next: () => {
+            this.cargarLibros();
+            this.closeModal();
+            alert('Libro actualizado correctamente');
+          },
+          error: err => console.error('Error al actualizar:', err)
+        });
+
     } else {
-      const nuevo = { ...this.LibroForm };
-      nuevo.idLibro = this.generarNuevoId();
-      this.Libros.push(nuevo);
+      // ✅ Modo crear
+
+      if (!value.id_usuario_crea) {
+        alert('Debe ingresar un UUID para id_usuario_crea');
+        return;
+      }
+
+      const createData: CreateLibroRequest = {
+        genero: value.genero,
+        paginas: value.paginas,
+        producto_id: value.producto_id,
+        id_usuario_crea: value.id_usuario_crea
+      };
+
+      this.libroService.createLibro(createData)
+        .subscribe({
+          next: () => {
+            this.cargarLibros();
+            this.closeModal();
+            alert('Libro creado correctamente');
+          },
+          error: err => console.error('Error al crear:', err)
+        });
     }
-    this.closeModal();
-    this.filtrarLibros();
   }
 
-  // 🗑️ Eliminar
-  deleteLibro(idLibro: number) {
-    if (confirm('¿Seguro que deseas eliminar este Libro?')) {
-      this.Libros = this.Libros.filter(a => a.idLibro !== idLibro);
-      this.filtrarLibros();
-    }
-  }
+  deleteLibro(id: string): void {
+    if (!confirm('¿Seguro deseas eliminar este libro?')) return;
 
-  // ⚙️ Generar ID automático
-  private generarNuevoId(): number {
-    return this.Libros.length > 0
-      ? Math.max(...this.Libros.map(a => a.idLibro)) + 1
-      : 1;
+    this.libroService.deleteLibro(id).subscribe({
+      next: () => this.cargarLibros(),
+      error: err => console.error('Error al eliminar:', err)
+    });
   }
 }
+
