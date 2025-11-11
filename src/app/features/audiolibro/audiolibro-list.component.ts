@@ -1,86 +1,169 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+
+import { AudiolibroService } from '../../core/services/audiolibro.service';
+import { Audiolibro, CreateAudiolibroRequest, UpdateAudiolibroRequest } from '../../shared/models/audiolibro.model';
 
 @Component({
   selector: 'app-audiolibro-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './audiolibro-list.component.html',
   styleUrls: ['./audiolibro-list.component.scss']
 })
-export class AudiolibroListComponent {
-  // Lista inicial
-  audiolibros = [
-    { idAudiolibro: 1, titulo: 'El Principito', narrador: 'Carlos Rivera', duracion: '2h 30min', formato: 'MP3' },
-    { idAudiolibro: 2, titulo: '1984', narrador: 'Laura Torres', duracion: '9h 15min', formato: 'WAV' },
-    { idAudiolibro: 3, titulo: 'Moby Dick', narrador: 'José García', duracion: '12h 45min', formato: 'AAC' }
-  ];
+export class AudiolibroListComponent implements OnInit {
 
-  audiolibrosFiltrados = [...this.audiolibros];
-  filtroTitulo = '';
-  filtroIdAudiolibro = '';
+  audiolibros: Audiolibro[] = [];
+  audiolibrosFiltrados: Audiolibro[] = [];
+
+  // ✅ SOLO filtro por ID
+  filtroBusqueda: string = '';
 
   showModal = false;
   isEditMode = false;
-  audiolibroForm: any = {};
+  editingAudiolibro: Audiolibro | null = null;
 
-  // 🔍 Filtra los audiolibros
-  filtrarAudiolibros() {
-    const titulo = this.filtroTitulo.toLowerCase();
-    const id = this.filtroIdAudiolibro.toString().toLowerCase();
+  audiolibroForm: FormGroup;
 
+  constructor(
+    private audiolibroService: AudiolibroService,
+    private fb: FormBuilder
+  ) {
+    this.audiolibroForm = this.fb.group({
+      narrador: ['', Validators.required],
+      duracion: [0, [Validators.required, Validators.min(1)]],
+      formato: ['', Validators.required],
+      producto_id: ['', Validators.required],
+      id_usuario_crea: [''], 
+      id_usuario_edita: ['']
+    });
+  }
+
+  ngOnInit(): void {
+    this.cargarAudiolibros();
+  }
+
+  cargarAudiolibros(): void {
+    this.audiolibroService.getAudiolibros({ page: 1, limit: 100 }).subscribe({
+      next: (res: any) => {
+        this.audiolibros = res.data || res;
+        this.audiolibrosFiltrados = [...this.audiolibros];
+      },
+      error: err => console.error('Error al cargar audiolibros:', err)
+    });
+  }
+
+  onFilterChange(): void {
+    const filtro = this.filtroBusqueda.trim().toLowerCase();
+    if (!filtro) {
+      this.audiolibrosFiltrados = [...this.audiolibros];
+      return;
+    }
     this.audiolibrosFiltrados = this.audiolibros.filter(a =>
-      a.titulo.toLowerCase().includes(titulo) &&
-      a.idAudiolibro.toString().includes(id)
+      a.id_audiolibro.toLowerCase().includes(filtro)
     );
   }
 
-  // ➕ Crear nuevo audiolibro
-  openCreateModal() {
-    this.audiolibroForm = {};
+  openCreateModal(): void {
     this.isEditMode = false;
+    this.editingAudiolibro = null;
+
+    this.audiolibroForm.reset({
+      narrador: '',
+      duracion: 0,
+      formato: '',
+      producto_id: '',
+      id_usuario_crea: '',
+      id_usuario_edita: ''
+    });
+
     this.showModal = true;
   }
 
-  // ✏️ Editar audiolibro existente
-  openEditModal(audiolibro: any) {
-    this.audiolibroForm = { ...audiolibro };
+  openEditModal(audiolibro: Audiolibro): void {
     this.isEditMode = true;
+    this.editingAudiolibro = audiolibro;
+
+    this.audiolibroForm.patchValue({
+      narrador: audiolibro.narrador,
+      duracion: audiolibro.duracion,
+      formato: audiolibro.formato,
+      producto_id: audiolibro.producto_id,
+      id_usuario_edita: ''
+    });
+
     this.showModal = true;
   }
 
-  // ❌ Cerrar modal
-  closeModal() {
+  closeModal(): void {
     this.showModal = false;
+    this.editingAudiolibro = null;
   }
 
-  // 💾 Guardar (crear o actualizar)
-  saveAudiolibro() {
-    if (this.isEditMode) {
-      const index = this.audiolibros.findIndex(a => a.idAudiolibro === this.audiolibroForm.idAudiolibro);
-      if (index !== -1) this.audiolibros[index] = { ...this.audiolibroForm };
+  saveAudiolibro(): void {
+    if (this.audiolibroForm.invalid) {
+      this.audiolibroForm.markAllAsTouched();
+      return;
+    }
+
+    const value = this.audiolibroForm.value;
+
+    if (this.isEditMode && this.editingAudiolibro) {
+      if (!value.id_usuario_edita) {
+        alert('Debe ingresar un UUID para id_usuario_edita');
+        return;
+      }
+
+      const updateData: UpdateAudiolibroRequest = {
+        narrador: value.narrador,
+        duracion: value.duracion,
+        formato: value.formato,
+        id_usuario_edita: value.id_usuario_edita
+      };
+
+      this.audiolibroService.updateAudiolibro(this.editingAudiolibro.id_audiolibro, updateData)
+        .subscribe({
+          next: () => {
+            this.cargarAudiolibros();
+            this.closeModal();
+            alert('Audiolibro actualizado correctamente');
+          },
+          error: err => console.error('Error al actualizar:', err)
+        });
+
     } else {
-      const nuevo = { ...this.audiolibroForm };
-      nuevo.idAudiolibro = this.generarNuevoId();
-      this.audiolibros.push(nuevo);
+
+      if (!value.id_usuario_crea) {
+        alert('Debe ingresar un UUID para id_usuario_crea');
+        return;
+      }
+
+      const createData: CreateAudiolibroRequest = {
+        narrador: value.narrador,
+        duracion: value.duracion,
+        formato: value.formato,
+        producto_id: value.producto_id,
+        id_usuario_crea: value.id_usuario_crea
+      };
+
+      this.audiolibroService.createAudiolibro(createData).subscribe({
+        next: () => {
+          this.cargarAudiolibros();
+          this.closeModal();
+          alert('Audiolibro creado correctamente');
+        },
+        error: err => console.error('Error al crear:', err)
+      });
     }
-    this.closeModal();
-    this.filtrarAudiolibros();
   }
 
-  // 🗑️ Eliminar
-  deleteAudiolibro(idAudiolibro: number) {
-    if (confirm('¿Seguro que deseas eliminar este audiolibro?')) {
-      this.audiolibros = this.audiolibros.filter(a => a.idAudiolibro !== idAudiolibro);
-      this.filtrarAudiolibros();
-    }
-  }
+  deleteAudiolibro(id: string): void {
+    if (!confirm('¿Seguro deseas eliminar este audiolibro?')) return;
 
-  // ⚙️ Generar ID automático
-  private generarNuevoId(): number {
-    return this.audiolibros.length > 0
-      ? Math.max(...this.audiolibros.map(a => a.idAudiolibro)) + 1
-      : 1;
+    this.audiolibroService.deleteAudiolibro(id).subscribe({
+      next: () => this.cargarAudiolibros(),
+      error: err => console.error('Error al eliminar:', err)
+    });
   }
 }
