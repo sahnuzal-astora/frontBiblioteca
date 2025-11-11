@@ -1,8 +1,8 @@
 <div class="Revista-list">
   <div class="card">
     <div class="card-header">
-      <h2>Gestión de Periódicos</h2>
-      <button class="btn btn-success" (click)="openCreateModal()">➕ Nuevo Periódico</button>
+      <h2>Gestión de Revistas</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">➕ Nueva Revista</button>
     </div>
 
     <div class="filters">
@@ -29,22 +29,21 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let Revista of RevistasFiltrados">
-          <td>{{ Revista.idRevista }}</td>
-          <td>{{ Revista.edicion }}</td>
+        <tr *ngFor="let revista of revistasFiltradas">
+          <td>{{ revista.id_revista }}</td>
+          <td>{{ revista.edicion }}</td>
           <td>
-            <button class="btn btn-warning btn-sm" (click)="openEditModal(Revista)">✏️</button>
-            <button class="btn btn-danger btn-sm" (click)="deleteRevista(Revista.idRevista)">🗑️</button>
+            <button class="btn btn-warning btn-sm" (click)="openEditModal(revista)">✏️</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteRevista(revista.id_revista)">🗑️</button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <!-- Modal -->
   <div class="modal-backdrop" *ngIf="showModal">
     <div class="modal-content animate">
-      <h3>{{ isEditMode ? 'Editar Periódico' : 'Nuevo Periódico' }}</h3>
+      <h3>{{ isEditMode ? 'Editar Revista' : 'Nueva Revista' }}</h3>
       <form (ngSubmit)="saveRevista()">
 
         <div class="form-group">
@@ -53,10 +52,46 @@
             id="edicion"
             name="edicion"
             type="text"
-            [(ngModel)]="RevistaForm.edicion"
+            [(ngModel)]="revistaForm.edicion"
             required
           />
         </div>
+
+        <ng-container *ngIf="isEditMode">
+          <div class="form-group">
+            <label for="id_usuario_edita">ID Usuario Edita (UUID)</label>
+            <input
+              id="id_usuario_edita"
+              name="id_usuario_edita"
+              type="text"
+              [(ngModel)]="revistaForm.id_usuario_edita"
+              required
+            />
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="!isEditMode">
+          <div class="form-group">
+            <label for="producto_id">Producto ID (UUID)</label>
+            <input
+              id="producto_id"
+              name="producto_id"
+              type="text"
+              [(ngModel)]="revistaForm.producto_id"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="id_usuario_crea">ID Usuario Crea (UUID)</label>
+            <input
+              id="id_usuario_crea"
+              name="id_usuario_crea"
+              type="text"
+              [(ngModel)]="revistaForm.id_usuario_crea"
+              required
+            />
+          </div>
+        </ng-container>
 
         <div class="actions">
           <button type="submit" class="btn btn-primary">

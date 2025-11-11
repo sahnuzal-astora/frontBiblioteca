@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   Audiolibro,
+  AudiolibroFilters,
   CreateAudiolibroRequest,
-  UpdateAudiolibroRequest,
-  AudiolibroFilters
+  UpdateAudiolibroRequest
 } from '../../shared/models/audiolibro.model';
 
 import {
