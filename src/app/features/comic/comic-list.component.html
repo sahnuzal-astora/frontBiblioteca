@@ -1,4 +1,5 @@
 <div class="comic-list">
+
   <div class="card">
     <div class="card-header">
       <h2>Gestión de Cómics</h2>
@@ -8,75 +9,124 @@
     <div class="filters">
       <input
         type="text"
-        placeholder="Buscar por ID"
-        [(ngModel)]="filtroIdComic"
-        (input)="filtrarComics()"
-      />
-      <input
-        type="text"
-        placeholder="Buscar por título"
-        [(ngModel)]="filtroTitulo"
-        (input)="filtrarComics()"
+        placeholder="Buscar por ID del cómic"
+        [(ngModel)]="filtroBusqueda"
+        (input)="onFilterChange()"
       />
     </div>
 
     <table class="table">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Título</th>
+          <th>ID Cómic</th>
           <th>Ilustrador</th>
           <th>Editorial</th>
           <th>Volumen</th>
+          <th>ID Producto</th>
           <th>Acciones</th>
         </tr>
       </thead>
+
       <tbody>
         <tr *ngFor="let comic of comicsFiltrados">
-          <td>{{ comic.idComic }}</td>
-          <td>{{ comic.titulo }}</td>
+          <td>{{ comic.id_comic }}</td>
           <td>{{ comic.ilustrador }}</td>
           <td>{{ comic.editorial }}</td>
           <td>{{ comic.volumen }}</td>
+          <td>{{ comic.producto_id }}</td>
           <td>
-            <button class="btn btn-warning btn-sm" (click)="openEditModal(comic)">✏️</button>
-            <button class="btn btn-danger btn-sm" (click)="deleteComic(comic.idComic)">🗑️</button>
+            <button class="btn btn-warning btn-sm" (click)="openEditModal(comic)">✏️ Editar</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteComic(comic.id_comic)">🗑️ Borrar</button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <!-- Modal -->
+  <!-- ✅ Modal -->
   <div class="modal-backdrop" *ngIf="showModal">
     <div class="modal-content animate">
+
       <h3>{{ isEditMode ? 'Editar Cómic' : 'Nuevo Cómic' }}</h3>
-      <form (ngSubmit)="saveComic()">
-        <div class="form-group">
-          <label for="titulo">Título</label>
-          <input id="titulo" name="titulo" type="text" [(ngModel)]="comicForm.titulo" required />
-        </div>
+
+      <form [formGroup]="comicForm" (ngSubmit)="saveComic()">
 
         <div class="form-group">
           <label for="ilustrador">Ilustrador</label>
-          <input id="ilustrador" name="ilustrador" type="text" [(ngModel)]="comicForm.ilustrador" required />
+          <input
+            id="ilustrador"
+            type="text"
+            formControlName="ilustrador"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label for="editorial">Editorial</label>
-          <input id="editorial" name="editorial" type="text" [(ngModel)]="comicForm.editorial" required />
+          <input
+            id="editorial"
+            type="text"
+            formControlName="editorial"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label for="volumen">Volumen</label>
-          <input id="volumen" name="volumen" type="number" [(ngModel)]="comicForm.volumen" required />
+          <input
+            id="volumen"
+            type="text"   
+            formControlName="volumen"
+            required
+          />
+        </div>
+
+        <!-- ✅ solo aparece al crear -->
+        <div class="form-group" *ngIf="!isEditMode">
+          <label for="producto_id">ID Producto</label>
+          <input
+            id="producto_id"
+            type="text"
+            formControlName="producto_id"
+            required
+          />
+        </div>
+
+        <!-- ✅ UUID creado -->
+        <div class="form-group" *ngIf="!isEditMode">
+          <label for="id_usuario_crea">ID Usuario Crea (UUID)</label>
+          <input
+            id="id_usuario_crea"
+            type="text"
+            formControlName="id_usuario_crea"
+            placeholder="UUID"
+          />
+        </div>
+
+        <!-- ✅ UUID edita -->
+        <div class="form-group" *ngIf="isEditMode">
+          <label for="id_usuario_edita">ID Usuario Edita (UUID)</label>
+          <input
+            id="id_usuario_edita"
+            type="text"
+            formControlName="id_usuario_edita"
+            placeholder="UUID"
+          />
         </div>
 
         <div class="actions">
-          <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Actualizar' : 'Guardar' }}</button>
-          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+          </button>
+
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">
+            Cancelar
+          </button>
         </div>
+
       </form>
+
     </div>
   </div>
+
 </div>
