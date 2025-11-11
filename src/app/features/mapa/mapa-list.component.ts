@@ -1,86 +1,170 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+
+import { MapaService } from '../../core/services/mapa.service';
+import { Mapa, CreateMapaRequest, UpdateMapaRequest } from '../../shared/models/mapa.model';
 
 @Component({
   selector: 'app-mapa-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './mapa-list.component.html',
   styleUrls: ['./mapa-list.component.scss']
 })
-export class MapaListComponent {
-  // 🗺️ Lista inicial de mapas
-  mapas = [
-    { idMapa: 1, region: 'Sudamérica', escala: '1:50000', tipo: 'Político' },
-    { idMapa: 2, region: 'Europa Occidental', escala: '1:100000', tipo: 'Físico' },
-    { idMapa: 3, region: 'Asia Oriental', escala: '1:75000', tipo: 'Climático' }
-  ];
+export class MapaListComponent implements OnInit {
 
-  mapasFiltrados = [...this.mapas];
-  filtroRegion = '';
-  filtroIdMapa = '';
+  mapas: Mapa[] = [];
+  mapasFiltrados: Mapa[] = [];
+
+  filtroBusqueda: string = '';
 
   showModal = false;
   isEditMode = false;
-  mapaForm: any = {};
+  editingMapa: Mapa | null = null;
 
-  // 🔍 Filtrar mapas
-  filtrarMapas() {
-    const region = this.filtroRegion.toLowerCase();
-    const id = this.filtroIdMapa.toString().toLowerCase();
+  mapaForm: FormGroup;
 
+  constructor(
+    private mapaService: MapaService,
+    private fb: FormBuilder
+  ) {
+    this.mapaForm = this.fb.group({
+      region: ['', Validators.required],
+      escala: ['', Validators.required],
+      tipo: ['', Validators.required],
+      producto_id: [''],
+      id_usuario_crea: [''],
+      id_usuario_edita: ['']
+    });
+  }
+
+  ngOnInit(): void {
+    this.cargarMapas();
+  }
+
+  cargarMapas(): void {
+    this.mapaService.getMapas({ page: 1, limit: 100 }).subscribe({
+      next: (res: any) => {
+        this.mapas = res.data || res;
+        this.mapasFiltrados = [...this.mapas];
+      },
+      error: err => console.error('Error al cargar mapas:', err)
+    });
+  }
+
+  onFilterChange(): void {
+    const filtro = this.filtroBusqueda.trim().toLowerCase();
+    if (!filtro) {
+      this.mapasFiltrados = [...this.mapas];
+      return;
+    }
     this.mapasFiltrados = this.mapas.filter(m =>
-      m.region.toLowerCase().includes(region) &&
-      m.idMapa.toString().includes(id)
+      m.id_mapa.toLowerCase().includes(filtro)
     );
   }
 
-  // ➕ Crear nuevo mapa
-  openCreateModal() {
-    this.mapaForm = {};
+  openCreateModal(): void {
     this.isEditMode = false;
+    this.editingMapa = null;
+
+    this.mapaForm.reset({
+      region: '',
+      escala: '',
+      tipo: '',
+      producto_id: '',
+      id_usuario_crea: '',
+      id_usuario_edita: ''
+    });
+
     this.showModal = true;
   }
 
-  // ✏️ Editar mapa existente
-  openEditModal(mapa: any) {
-    this.mapaForm = { ...mapa };
+  openEditModal(mapa: Mapa): void {
     this.isEditMode = true;
+    this.editingMapa = mapa;
+
+    this.mapaForm.patchValue({
+      region: mapa.region,
+      escala: mapa.escala,
+      tipo: mapa.tipo,
+      id_usuario_edita: ''
+    });
+
     this.showModal = true;
   }
 
-  // ❌ Cerrar modal
-  closeModal() {
+  closeModal(): void {
     this.showModal = false;
+    this.editingMapa = null;
   }
 
-  // 💾 Guardar (crear o actualizar)
-  saveMapa() {
-    if (this.isEditMode) {
-      const index = this.mapas.findIndex(m => m.idMapa === this.mapaForm.idMapa);
-      if (index !== -1) this.mapas[index] = { ...this.mapaForm };
+  saveMapa(): void {
+    if (this.mapaForm.invalid) {
+      this.mapaForm.markAllAsTouched();
+      return;
+    }
+
+    const value = this.mapaForm.value;
+
+    // ✅ EDITAR
+    if (this.isEditMode && this.editingMapa) {
+
+      if (!value.id_usuario_edita) {
+        alert('Debe ingresar un UUID para id_usuario_edita');
+        return;
+      }
+
+      const updateData: UpdateMapaRequest = {
+        region: value.region,
+        escala: value.escala,
+        tipo: value.tipo,
+        id_usuario_edita: value.id_usuario_edita
+      };
+
+      this.mapaService.updateMapa(this.editingMapa.id_mapa, updateData)
+        .subscribe({
+          next: () => {
+            this.cargarMapas();
+            this.closeModal();
+            alert('Mapa actualizado correctamente');
+          },
+          error: err => console.error('Error al actualizar:', err)
+        });
+
     } else {
-      const nuevo = { ...this.mapaForm };
-      nuevo.idMapa = this.generarNuevoId();
-      this.mapas.push(nuevo);
+      // ✅ CREAR
+
+      if (!value.id_usuario_crea) {
+        alert('Debe ingresar un UUID para id_usuario_crea');
+        return;
+      }
+
+      const createData: CreateMapaRequest = {
+        region: value.region,
+        escala: value.escala,
+        tipo: value.tipo,
+        producto_id: value.producto_id,
+        id_usuario_crea: value.id_usuario_crea
+      };
+
+      this.mapaService.createMapa(createData).subscribe({
+        next: () => {
+          this.cargarMapas();
+          this.closeModal();
+          alert('Mapa creado correctamente');
+        },
+        error: err => console.error('Error al crear:', err)
+      });
     }
-    this.closeModal();
-    this.filtrarMapas();
   }
 
-  // 🗑️ Eliminar mapa
-  deleteMapa(idMapa: number) {
-    if (confirm('¿Seguro que deseas eliminar este mapa?')) {
-      this.mapas = this.mapas.filter(m => m.idMapa !== idMapa);
-      this.filtrarMapas();
-    }
-  }
+  deleteMapa(id: string): void {
+    if (!confirm('¿Seguro deseas eliminar este mapa?')) return;
 
-  // ⚙️ Generar ID automático
-  private generarNuevoId(): number {
-    return this.mapas.length > 0
-      ? Math.max(...this.mapas.map(m => m.idMapa)) + 1
-      : 1;
+    this.mapaService.deleteMapa(id).subscribe({
+      next: () => this.cargarMapas(),
+      error: err => console.error('Error al eliminar:', err)
+    });
   }
 }

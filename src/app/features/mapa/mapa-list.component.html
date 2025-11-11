@@ -9,14 +9,8 @@
       <input
         type="text"
         placeholder="Buscar por ID"
-        [(ngModel)]="filtroIdMapa"
-        (input)="filtrarMapas()"
-      />
-      <input
-        type="text"
-        placeholder="Buscar por región"
-        [(ngModel)]="filtroRegion"
-        (input)="filtrarMapas()"
+        [(ngModel)]="filtroBusqueda"
+        (input)="onFilterChange()"
       />
     </div>
 
@@ -32,13 +26,13 @@
       </thead>
       <tbody>
         <tr *ngFor="let mapa of mapasFiltrados">
-          <td>{{ mapa.idMapa }}</td>
+          <td>{{ mapa.id_mapa }}</td>
           <td>{{ mapa.region }}</td>
           <td>{{ mapa.escala }}</td>
           <td>{{ mapa.tipo }}</td>
           <td>
             <button class="btn btn-warning btn-sm" (click)="openEditModal(mapa)">✏️</button>
-            <button class="btn btn-danger btn-sm" (click)="deleteMapa(mapa.idMapa)">🗑️</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteMapa(mapa.id_mapa)">🗑️</button>
           </td>
         </tr>
       </tbody>
@@ -49,20 +43,32 @@
   <div class="modal-backdrop" *ngIf="showModal">
     <div class="modal-content animate">
       <h3>{{ isEditMode ? 'Editar Mapa' : 'Nuevo Mapa' }}</h3>
-      <form (ngSubmit)="saveMapa()">
+
+      <form [formGroup]="mapaForm" (ngSubmit)="saveMapa()">
+
         <div class="form-group">
           <label for="region">Región</label>
-          <input id="region" name="region" type="text" [(ngModel)]="mapaForm.region" required />
+          <input
+            id="region"
+            type="text"
+            formControlName="region"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label for="escala">Escala</label>
-          <input id="escala" name="escala" type="text" [(ngModel)]="mapaForm.escala" required />
+          <input
+            id="escala"
+            type="text"
+            formControlName="escala"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label for="tipo">Tipo</label>
-          <select id="tipo" name="tipo" [(ngModel)]="mapaForm.tipo" required>
+          <select id="tipo" formControlName="tipo" required>
             <option value="Político">Político</option>
             <option value="Físico">Físico</option>
             <option value="Climático">Climático</option>
@@ -70,9 +76,47 @@
           </select>
         </div>
 
+        <!-- ✅ Solo al crear -->
+        <div class="form-group" *ngIf="!isEditMode">
+          <label for="producto_id">ID Producto</label>
+          <input
+            id="producto_id"
+            type="text"
+            formControlName="producto_id"
+            required
+          />
+        </div>
+
+        <!-- ✅ Solo al crear -->
+        <div class="form-group" *ngIf="!isEditMode">
+          <label for="id_usuario_crea">ID Usuario Crea</label>
+          <input
+            id="id_usuario_crea"
+            type="text"
+            formControlName="id_usuario_crea"
+            required
+          />
+        </div>
+
+        <!-- ✅ Solo al editar -->
+        <div class="form-group" *ngIf="isEditMode">
+          <label for="id_usuario_edita">ID Usuario Edita</label>
+          <input
+            id="id_usuario_edita"
+            type="text"
+            formControlName="id_usuario_edita"
+            required
+          />
+        </div>
+
         <div class="actions">
-          <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Actualizar' : 'Guardar' }}</button>
-          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+          </button>
+
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">
+            Cancelar
+          </button>
         </div>
       </form>
     </div>
