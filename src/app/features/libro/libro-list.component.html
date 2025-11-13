@@ -1,0 +1,121 @@
+<div class="libro-list">
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Gestión de Libros</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">➕ Nuevo Libro</button>
+    </div>
+
+    <div class="filters">
+      <input
+        type="text"
+        placeholder="Buscar por ID del libro"
+        [(ngModel)]="filtroIdLibro"
+        (input)="filtrarLibros()"
+      />
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID Libro</th>
+          <th>Género</th>
+          <th>Páginas</th>
+          <th>ID Producto</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let libro of librosFiltrados">
+          <td>{{ libro.id_libro }}</td>
+          <td>{{ libro.genero }}</td>
+          <td>{{ libro.paginas }}</td>
+          <td>{{ libro.producto_id }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" (click)="openEditModal(libro)">✏️ Editar</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteLibro(libro.id_libro)">🗑️ Borrar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+
+  <div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal-content animate">
+
+      <h3>{{ isEditMode ? 'Editar Libro' : 'Nuevo Libro' }}</h3>
+
+      <form [formGroup]="libroForm" (ngSubmit)="saveLibro()">
+
+        <div class="form-group">
+          <label for="genero">Género</label>
+          <input
+            id="genero"
+            type="text"
+            formControlName="genero"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="paginas">Páginas</label>
+          <input
+            id="paginas"
+            type="number"
+            formControlName="paginas"
+            required
+          />
+        </div>
+
+        
+        <div class="form-group" *ngIf="!isEditMode">
+          <label for="producto_id">ID Producto</label>
+          <input
+            id="producto_id"
+            type="text"
+            formControlName="producto_id"
+            required
+          />
+        </div>
+
+        
+        <div class="form-group" *ngIf="!isEditMode">
+          <label for="id_usuario_crea">Usuario Crea (UUID)</label>
+          <input
+            id="id_usuario_crea"
+            type="text"
+            formControlName="id_usuario_crea"
+            required
+          />
+        </div>
+
+        
+        <div class="form-group" *ngIf="isEditMode">
+          <label for="id_usuario_edita">Usuario Edita (UUID)</label>
+          <input
+            id="id_usuario_edita"
+            type="text"
+            formControlName="id_usuario_edita"
+            required
+          />
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">
+            {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+          </button>
+
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">
+            Cancelar
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+</div>
