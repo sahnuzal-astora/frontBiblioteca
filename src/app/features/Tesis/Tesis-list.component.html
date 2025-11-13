@@ -1,82 +1,69 @@
 <div class="tesis-list">
+
   <div class="card">
     <div class="card-header">
       <h2>Gestión de Tesis</h2>
       <button class="btn btn-success" (click)="openCreateModal()">➕ Nueva Tesis</button>
     </div>
 
+    <!-- 🔍 Filtro -->
     <div class="filters">
       <input
         type="text"
-        placeholder="Buscar por ID"
-        [(ngModel)]="filtroIdTesis"
-        (input)="filtrarTesis()"
-      />
-      <input
-        type="text"
-        placeholder="Buscar por Universidad"
-        [(ngModel)]="filtroUniversidad"
-        (input)="filtrarTesis()"
-      />
-      <input
-        type="text"
-        placeholder="Buscar por Director"
-        [(ngModel)]="filtroDirector"
-        (input)="filtrarTesis()"
+        placeholder="Buscar por ID o Universidad"
+        [(ngModel)]="filtroBusqueda"
+        (input)="onFilterChange()"
       />
     </div>
 
+    <!-- 📋 Tabla -->
     <table class="table">
       <thead>
         <tr>
-          <th>ID</th>
+          <th>ID Tesis</th>
           <th>Universidad</th>
           <th>Director</th>
           <th>Grado Académico</th>
+          <th>ID Producto</th>
           <th>Acciones</th>
         </tr>
       </thead>
+
       <tbody>
-        <tr *ngFor="let tesis of TesisFiltradas">
-          <td>{{ tesis.idTesis }}</td>
-          <td>{{ tesis.universidad }}</td>
-          <td>{{ tesis.director }}</td>
-          <td>{{ tesis.gradoAcademico }}</td>
+        <tr *ngFor="let t of tesisFiltradas">
+          <td>{{ t.id_tesis }}</td>
+          <td>{{ t.universidad }}</td>
+          <td>{{ t.director || 'N/A' }}</td>
+          <td>{{ t.grado_academico }}</td>
+          <td>{{ t.producto_id }}</td>
           <td>
-            <button class="btn btn-warning btn-sm" (click)="openEditModal(tesis)">✏️</button>
-            <button class="btn btn-danger btn-sm" (click)="deleteTesis(tesis.idTesis)">🗑️</button>
+            <button class="btn btn-warning btn-sm" (click)="openEditModal(t)">✏️ Editar</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteTesis(t.id_tesis)">🗑️ Borrar</button>
           </td>
         </tr>
       </tbody>
     </table>
+
+    <!-- 🟡 Si no hay resultados -->
+    <p *ngIf="tesisFiltradas.length === 0" class="no-results">
+      No se encontraron tesis registradas.
+    </p>
   </div>
 
-  <!-- Modal -->
+  <!-- ✅ Modal -->
   <div class="modal-backdrop" *ngIf="showModal">
     <div class="modal-content animate">
+
       <h3>{{ isEditMode ? 'Editar Tesis' : 'Nueva Tesis' }}</h3>
-      <form (ngSubmit)="saveTesis()">
-        
-        <!-- 🆔 Campo ID -->
-        <div class="form-group">
-          <label for="idTesis">ID</label>
-          <input
-            id="idTesis"
-            name="idTesis"
-            type="number"
-            [(ngModel)]="TesisForm.idTesis"
-            [readonly]="isEditMode"
-            required
-          />
-        </div>
+
+      <form [formGroup]="tesisForm" (ngSubmit)="saveTesis()">
 
         <div class="form-group">
           <label for="universidad">Universidad</label>
           <input
             id="universidad"
-            name="universidad"
             type="text"
-            [(ngModel)]="TesisForm.universidad"
+            formControlName="universidad"
             required
           />
         </div>
@@ -85,33 +72,65 @@
           <label for="director">Director</label>
           <input
             id="director"
-            name="director"
             type="text"
-            [(ngModel)]="TesisForm.director"
+            formControlName="director"
             required
           />
         </div>
 
         <div class="form-group">
-          <label for="gradoAcademico">Grado Académico</label>
-          <select
-            id="gradoAcademico"
-            name="gradoAcademico"
-            [(ngModel)]="TesisForm.gradoAcademico"
+          <label for="grado_academico">Grado Académico</label>
+          <input
+            id="grado_academico"
+            type="text"
+            formControlName="grado_academico"
             required
-          >
-            <option value="Licenciatura">Licenciatura</option>
-            <option value="Maestría">Maestría</option>
-            <option value="Doctorado">Doctorado</option>
-          </select>
+          />
+        </div>
+
+        <!-- ✅ Solo al crear -->
+        <div class="form-group" *ngIf="!isEditMode">
+          <label for="producto_id">ID Producto</label>
+          <input
+            id="producto_id"
+            type="text"
+            formControlName="producto_id"
+            required
+          />
+        </div>
+
+        <!-- ✅ Solo al crear -->
+        <div class="form-group" *ngIf="!isEditMode">
+          <label for="id_usuario_crea">Usuario Crea (UUID)</label>
+          <input
+            id="id_usuario_crea"
+            type="text"
+            formControlName="id_usuario_crea"
+            required
+          />
+        </div>
+
+        <!-- ✅ Solo al editar -->
+        <div class="form-group" *ngIf="isEditMode">
+          <label for="id_usuario_edita">Usuario Edita (UUID)</label>
+          <input
+            id="id_usuario_edita"
+            type="text"
+            formControlName="id_usuario_edita"
+            required
+          />
         </div>
 
         <div class="actions">
           <button type="submit" class="btn btn-primary">
             {{ isEditMode ? 'Actualizar' : 'Guardar' }}
           </button>
-          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">
+            Cancelar
+          </button>
         </div>
+
       </form>
     </div>
   </div>

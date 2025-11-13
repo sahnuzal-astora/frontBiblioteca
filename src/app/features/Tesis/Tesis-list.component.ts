@@ -1,95 +1,184 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TesisService } from '../../core/services/tesis.service';
+import { Tesis, CreateTesisRequest, UpdateTesisRequest } from '../../shared/models/tesis.model';
 
 @Component({
   selector: 'app-tesis-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './tesis-list.component.html',
   styleUrls: ['./tesis-list.component.scss']
 })
-export class TesisListComponent {
-  // 📘 Lista inicial de tesis
-  Tesis = [
-    { idTesis: 1, universidad: 'Universidad Nacional', director: 'Dr. Pérez', gradoAcademico: 'Maestría' },
-    { idTesis: 2, universidad: 'Universidad de los Andes', director: 'Dra. Gómez', gradoAcademico: 'Doctorado' },
-    { idTesis: 3, universidad: 'Pontificia Universidad Javeriana', director: 'Dr. López', gradoAcademico: 'Pregrado' }
-  ];
+export class TesisListComponent implements OnInit {
 
-  // 🔍 Variables para filtros
-  TesisFiltradas = [...this.Tesis];
-  filtroIdTesis = '';
-  filtroUniversidad = '';
-  filtroDirector = ''; // ✅ Agregado para evitar error
+  tesis: (Tesis & { director?: string })[] = [];
+  tesisFiltradas: (Tesis & { director?: string })[] = [];
 
-  // ⚙️ Control de modal y formulario
+  filtroBusqueda: string = '';
+
   showModal = false;
   isEditMode = false;
-  TesisForm: any = {}; // ✅ Se usa con la misma mayúscula que en HTML
+  editingTesis: (Tesis & { director?: string }) | null = null;
 
-  // 🔍 Filtrar por ID, universidad o director
-  filtrarTesis() {
-    const id = this.filtroIdTesis.toString().toLowerCase();
-    const universidad = this.filtroUniversidad.toLowerCase();
-    const director = this.filtroDirector.toLowerCase();
+  tesisForm: FormGroup;
 
-    this.TesisFiltradas = this.Tesis.filter(t =>
-      t.idTesis.toString().includes(id) &&
-      t.universidad.toLowerCase().includes(universidad) &&
-      t.director.toLowerCase().includes(director)
+  constructor(
+    private tesisService: TesisService,
+    private fb: FormBuilder
+  ) {
+    this.tesisForm = this.fb.group({
+      universidad: ['', Validators.required],
+      director: ['', Validators.required],
+      grado_academico: ['', Validators.required],
+      producto_id: ['', Validators.required],
+      id_usuario_crea: [''],
+      id_usuario_edita: ['']
+    });
+  }
+
+  ngOnInit(): void {
+    this.cargarTesis();
+  }
+
+  // 🔄 Obtener lista de tesis
+  cargarTesis(): void {
+    this.tesisService.getTesis().subscribe({
+      next: (res: any) => {
+        this.tesis = res.data || res;
+        this.tesisFiltradas = [...this.tesis];
+      },
+      error: err => console.error('Error al cargar tesis:', err)
+    });
+  }
+
+  // 🔍 Filtrar por id_tesis o universidad
+  onFilterChange(): void {
+    const filtro = this.filtroBusqueda.trim().toLowerCase();
+
+    if (!filtro) {
+      this.tesisFiltradas = [...this.tesis];
+      return;
+    }
+
+    this.tesisFiltradas = this.tesis.filter(t =>
+      (t.id_tesis?.toLowerCase().includes(filtro) || '') ||
+      (t.universidad?.toLowerCase().includes(filtro) || '')
     );
   }
 
-  // ➕ Crear nueva tesis
-  openCreateModal() {
-    this.TesisForm = {};
+  // ➕ Abrir modal de creación
+  openCreateModal(): void {
     this.isEditMode = false;
+    this.editingTesis = null;
+    this.tesisForm.reset({
+      universidad: '',
+      director: '',
+      grado_academico: '',
+      producto_id: '',
+      id_usuario_crea: '',
+      id_usuario_edita: ''
+    });
+
     this.showModal = true;
+    document.body.classList.add('modal-open');
   }
 
-  // ✏️ Editar tesis existente
-  openEditModal(tesis: any) {
-    this.TesisForm = { ...tesis };
+  // ✏️ Abrir modal de edición
+  openEditModal(tesis: Tesis & { director?: string }): void {
     this.isEditMode = true;
+    this.editingTesis = tesis;
+
+    this.tesisForm.patchValue({
+      universidad: tesis.universidad,
+      director: tesis.director || '',
+      grado_academico: tesis.grado_academico,
+      producto_id: tesis.producto_id,
+      id_usuario_crea: '',
+      id_usuario_edita: ''
+    });
+
     this.showModal = true;
+    document.body.classList.add('modal-open');
   }
 
   // ❌ Cerrar modal
-  closeModal() {
+  closeModal(): void {
     this.showModal = false;
+    this.editingTesis = null;
+    this.tesisForm.reset();
+    document.body.classList.remove('modal-open');
   }
 
-  // 💾 Guardar (crear o actualizar)
-  saveTesis() {
-    if (this.isEditMode) {
-      const index = this.Tesis.findIndex(t => t.idTesis === this.TesisForm.idTesis);
-      if (index !== -1) {
-        this.Tesis[index] = { ...this.TesisForm };
-      }
-    } else {
-      const nueva = { ...this.TesisForm };
-      nueva.idTesis = this.generarNuevoId();
-      this.Tesis.push(nueva);
+  // 💾 Guardar o actualizar
+  saveTesis(): void {
+    if (this.tesisForm.invalid) {
+      this.tesisForm.markAllAsTouched();
+      return;
     }
 
-    this.closeModal();
-    this.filtrarTesis();
+    const value = this.tesisForm.value;
+
+    if (this.isEditMode && this.editingTesis) {
+      // 🟣 Actualizar
+      if (!value.id_usuario_edita) {
+        alert('Debe ingresar un UUID para id_usuario_edita');
+        return;
+      }
+
+      const updateData: UpdateTesisRequest = {
+        universidad: value.universidad,
+        director: value.director,
+        grado_academico: value.grado_academico,
+        id_usuario_edita: value.id_usuario_edita
+      };
+
+      this.tesisService.updateTesis(this.editingTesis.id_tesis, updateData).subscribe({
+        next: () => {
+          alert('Tesis actualizada correctamente');
+          this.cargarTesis();
+          this.closeModal();
+        },
+        error: err => console.error('Error al actualizar tesis:', err)
+      });
+
+    } else {
+      // 🟢 Crear nueva
+      if (!value.id_usuario_crea) {
+        alert('Debe ingresar un UUID para id_usuario_crea');
+        return;
+      }
+
+      const createData: CreateTesisRequest = {
+        universidad: value.universidad,
+        director: value.director,
+        grado_academico: value.grado_academico,
+        producto_id: value.producto_id,
+        id_usuario_crea: value.id_usuario_crea
+      };
+
+      this.tesisService.createTesis(createData).subscribe({
+        next: () => {
+          alert('Tesis creada correctamente');
+          this.cargarTesis();
+          this.closeModal();
+        },
+        error: err => console.error('Error al crear tesis:', err)
+      });
+    }
   }
 
   // 🗑️ Eliminar tesis
-  deleteTesis(idTesis: number) {
-    if (confirm('¿Seguro que deseas eliminar esta tesis?')) {
-      this.Tesis = this.Tesis.filter(t => t.idTesis !== idTesis);
-      this.filtrarTesis();
-    }
-  }
+  deleteTesis(id: string): void {
+    if (!confirm('¿Seguro deseas eliminar esta tesis?')) return;
 
-  // ⚙️ Generar ID automático
-  private generarNuevoId(): number {
-    return this.Tesis.length > 0
-      ? Math.max(...this.Tesis.map(t => t.idTesis)) + 1
-      : 1;
+    this.tesisService.deleteTesis(id).subscribe({
+      next: () => {
+        alert('Tesis eliminada correctamente');
+        this.cargarTesis();
+      },
+      error: err => console.error('Error al eliminar tesis:', err)
+    });
   }
 }
-
