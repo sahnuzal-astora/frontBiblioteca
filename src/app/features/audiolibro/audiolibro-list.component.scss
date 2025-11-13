@@ -88,9 +88,7 @@
   }
 }
 
-/* ✅ MODAL GLOBAL (fuera del scope para coincidir con el HTML) */
 
-/* Fondo oscuro */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -101,7 +99,7 @@
   z-index: 999;
 }
 
-/* Contenedor modal */
+
 .modal {
   position: fixed;
   top: 50%;
@@ -115,7 +113,7 @@
   animation: fadeIn 0.25s ease-out;
 }
 
-/* Contenido del modal */
+
 .modal-content {
   padding: 20px;
 
@@ -186,7 +184,7 @@
   }
 }
 
-/* Animación */
+
 @keyframes fadeIn {
   from {
     opacity: 0;

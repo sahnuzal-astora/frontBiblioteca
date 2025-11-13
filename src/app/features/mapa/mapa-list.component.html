@@ -39,7 +39,7 @@
     </table>
   </div>
 
-  <!-- Modal -->
+ 
   <div class="modal-backdrop" *ngIf="showModal">
     <div class="modal-content animate">
       <h3>{{ isEditMode ? 'Editar Mapa' : 'Nuevo Mapa' }}</h3>
@@ -76,7 +76,7 @@
           </select>
         </div>
 
-        <!-- ✅ Solo al crear -->
+        
         <div class="form-group" *ngIf="!isEditMode">
           <label for="producto_id">ID Producto</label>
           <input
@@ -87,7 +87,7 @@
           />
         </div>
 
-        <!-- ✅ Solo al crear -->
+        
         <div class="form-group" *ngIf="!isEditMode">
           <label for="id_usuario_crea">ID Usuario Crea</label>
           <input
@@ -98,7 +98,7 @@
           />
         </div>
 
-        <!-- ✅ Solo al editar -->
+        
         <div class="form-group" *ngIf="isEditMode">
           <label for="id_usuario_edita">ID Usuario Edita</label>
           <input

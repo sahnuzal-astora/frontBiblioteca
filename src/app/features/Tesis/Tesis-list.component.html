@@ -6,7 +6,7 @@
       <button class="btn btn-success" (click)="openCreateModal()">➕ Nueva Tesis</button>
     </div>
 
-    <!-- 🔍 Filtro -->
+    
     <div class="filters">
       <input
         type="text"
@@ -16,7 +16,7 @@
       />
     </div>
 
-    <!-- 📋 Tabla -->
+    
     <table class="table">
       <thead>
         <tr>
@@ -44,13 +44,13 @@
       </tbody>
     </table>
 
-    <!-- 🟡 Si no hay resultados -->
+    
     <p *ngIf="tesisFiltradas.length === 0" class="no-results">
       No se encontraron tesis registradas.
     </p>
   </div>
 
-  <!-- ✅ Modal -->
+  
   <div class="modal-backdrop" *ngIf="showModal">
     <div class="modal-content animate">
 
@@ -88,7 +88,7 @@
           />
         </div>
 
-        <!-- ✅ Solo al crear -->
+        
         <div class="form-group" *ngIf="!isEditMode">
           <label for="producto_id">ID Producto</label>
           <input
@@ -99,7 +99,7 @@
           />
         </div>
 
-        <!-- ✅ Solo al crear -->
+        
         <div class="form-group" *ngIf="!isEditMode">
           <label for="id_usuario_crea">Usuario Crea (UUID)</label>
           <input
@@ -110,7 +110,7 @@
           />
         </div>
 
-        <!-- ✅ Solo al editar -->
+        
         <div class="form-group" *ngIf="isEditMode">
           <label for="id_usuario_edita">Usuario Edita (UUID)</label>
           <input

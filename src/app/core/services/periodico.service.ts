@@ -23,7 +23,7 @@ export class PeriodicoService {
   constructor(private apiService: ApiService) {}
 
   /**
-   * ✅ Obtiene todos los periódicos con paginación y filtros
+   *  Obtiene todos los periódicos con paginación y filtros
    */
   getPeriodicos(
     pagination: PaginationParams,
@@ -33,28 +33,28 @@ export class PeriodicoService {
   }
 
   /**
-   * ✅ Obtiene un periódico por ID
+   *  Obtiene un periódico por ID
    */
   getPeriodicoById(id: string): Observable<ApiResponse<Periodico>> {
     return this.apiService.get<Periodico>(`${this.endpoint}/${id}`);
   }
 
   /**
-   * ✅ Crea un nuevo periódico
+   *  Crea un nuevo periódico
    */
   createPeriodico(data: CreatePeriodicoRequest): Observable<ApiResponse<Periodico>> {
     return this.apiService.post<Periodico>(this.endpoint, data);
   }
 
   /**
-   * ✅ Actualiza un periódico existente
+   *  Actualiza un periódico existente
    */
   updatePeriodico(id: string, data: UpdatePeriodicoRequest): Observable<ApiResponse<Periodico>> {
     return this.apiService.put<Periodico>(`${this.endpoint}/${id}`, data);
   }
 
   /**
-   * ✅ Elimina un periódico
+   *  Elimina un periódico
    */
   deletePeriodico(id: string): Observable<ApiResponse<void>> {
     return this.apiService.delete<void>(`${this.endpoint}/${id}`);

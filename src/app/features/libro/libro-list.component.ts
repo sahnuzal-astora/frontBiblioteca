@@ -52,7 +52,7 @@ export class LibroListComponent implements OnInit {
     });
   }
 
-  // ✅ Filtrar solo por ID
+  
   filtrarLibros(): void {
     const filtro = this.filtroIdLibro.trim().toLowerCase();
 
@@ -66,7 +66,7 @@ export class LibroListComponent implements OnInit {
     );
   }
 
-  // ➕ Crear nuevo
+ 
   openCreateModal(): void {
     this.isEditMode = false;
     this.editingLibro = null;
@@ -82,7 +82,7 @@ export class LibroListComponent implements OnInit {
     this.showModal = true;
   }
 
-  // ✏️ Editar existente
+  
   openEditModal(libro: Libro): void {
     this.isEditMode = true;
     this.editingLibro = libro;
@@ -110,7 +110,7 @@ export class LibroListComponent implements OnInit {
 
     const value = this.libroForm.value;
 
-    // ✅ Modo edición
+    
     if (this.isEditMode && this.editingLibro) {
 
       if (!value.id_usuario_edita) {
@@ -135,8 +135,7 @@ export class LibroListComponent implements OnInit {
         });
 
     } else {
-      // ✅ Modo crear
-
+      
       if (!value.id_usuario_crea) {
         alert('Debe ingresar un UUID para id_usuario_crea');
         return;

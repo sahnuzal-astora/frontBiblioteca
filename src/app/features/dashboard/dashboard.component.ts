@@ -2,13 +2,13 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core'; 
 import { RouterModule } from '@angular/router';
 
-// --- Importaciones de Firebase ---
+
 import { initializeApp, FirebaseOptions } from 'firebase/app'; // Importamos FirebaseOptions
 import { getAuth, signInAnonymously, signInWithCustomToken, Auth } from 'firebase/auth';
 import { getFirestore, Firestore, collection, DocumentData, query, QueryDocumentSnapshot, onSnapshot } from 'firebase/firestore'; 
 import { setLogLevel } from '@firebase/logger';
 
-// --- MODELOS ---
+
 
 /**
  * Modelo de Usuario (debe coincidir con la estructura de Firestore)
@@ -18,7 +18,7 @@ interface Usuario extends DocumentData {
     nombre: string;
     email: string;
     telefono: string; 
-    activo: boolean; // Propiedad clave para la estadística
+    activo: boolean; 
     es_admin: boolean;
 }
 
@@ -538,7 +538,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor() {}
 
   ngOnDestroy(): void {
-    // Limpia el listener de Firestore al destruir el componente
+    
     if (this.unsubscribeUserStats) {
         this.unsubscribeUserStats();
         console.log("Listener de Firestore de usuarios detenido.");
@@ -546,32 +546,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
-    setLogLevel('debug'); // Mostrar logs de Firebase para debug
+    setLogLevel('debug'); 
     console.log("Iniciando ngOnInit: Intento de inicialización de Firebase.");
     await this.initializeFirebase();
     
-    // Si la autenticación tuvo éxito, cargamos los datos reales
+    
     if (this.isAuthReady()) {
         console.log("Autenticación exitosa. Cargando estadísticas de usuarios...");
         this.loadUserStats(); 
     } else {
-        // Si falló la inicialización (debido a config vacía), activamos el modo Demo
+        
         console.error("Firebase no está listo. Activando modo de demostración (Mock Data).");
         this.loadMockStats();
     }
   }
 
-  /**
-   * Señal computada para calcular los parámetros necesarios para dibujar el gráfico circular SVG.
-   * Utiliza la propiedad stroke-dashoffset de SVG para representar el porcentaje.
-   */
+  
   pieChartData = computed(() => {
     const percentage = this.userStats().porcentajeActivos;
     const radius = 35; // Radio del círculo
     // Circunferencia = 2 * pi * r
     const circumference = 2 * Math.PI * radius; 
     
-    // Calcula el offset necesario para que solo se muestre el segmento activo.
+    
     const activeOffset = circumference * (1 - (percentage / 100));
 
     return {
@@ -582,12 +579,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   });
 
 
-  // Inicialización y autenticación de Firebase
+  //* Inicialización y autenticación de Firebase*//
   async initializeFirebase(): Promise<void> {
     try {
-        // ----------------------------------------------------------------------
-        // --- PASO 1: CONFIGURACIÓN REAL DE FIREBASE (¡EXITOSO!) ---
-        // Estos son los datos que copiaste de la Consola de Firebase.
+        
         const manualFirebaseConfig: FirebaseOptions = {
           apiKey: "AIzaSyC-xlQyHgkufrdj-CEJXkEL5ilAF0YExJM",
           authDomain: "biblioteca-2bff0.firebaseapp.com",
@@ -642,12 +637,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
         
         this.isAuthReady.set(true);
-        this.isDemoMode.set(false); // Asegura que el modo demo esté apagado si la inicialización tuvo éxito
+        this.isDemoMode.set(false); 
         
     } catch (error) {
         console.error("Fallo la inicialización o autenticación de Firebase:", error);
         this.isAuthReady.set(false);
-        this.isDemoMode.set(true); // Activa el modo demo por si el error es de conexión
+        this.isDemoMode.set(true); 
     } finally {
         // Aseguramos que isLoading se apague independientemente del resultado
         if (!this.isAuthReady()) {
@@ -673,7 +668,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         porcentajeActivos: mockPorcentaje
     });
     this.isLoading.set(false);
-    this.isDemoMode.set(true); // Aseguramos que la bandera esté en true
+    this.isDemoMode.set(true); 
     console.log("Estadísticas de demostración cargadas.");
   }
 
@@ -694,13 +689,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     console.log("Cargando datos de Firestore con onSnapshot...");
 
     try {
-        // Ruta de colección pública requerida: /artifacts/{appId}/public/data/users
+        
         const collectionPath = `artifacts/${this.appId}/public/data/users`;
         console.log(`Escuchando colección: ${collectionPath}`);
         
         const usersCollectionRef = collection(this.db, collectionPath);
         
-        // Usamos onSnapshot para escuchar cambios en tiempo real
+        
         this.unsubscribeUserStats = onSnapshot(query(usersCollectionRef), (snapshot) => {
             let activos = 0;
             let inactivos = 0;
@@ -709,7 +704,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
             snapshot.forEach((doc: QueryDocumentSnapshot<DocumentData>) => { 
                 const userData = doc.data() as Usuario;
-                // Verificación basada en la propiedad 'activo'
+                
                 if (userData && typeof userData.activo === 'boolean' && userData.activo === true) {
                     activos++;
                 } else {
@@ -724,9 +719,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
             console.log("Estadísticas de usuarios actualizadas con éxito:", this.userStats());
 
         }, (error) => {
-            // Manejo de errores de Firestore (a menudo por reglas de seguridad o conexión fallida después de la inicialización)
+            
             console.error('Error en onSnapshot de usuarios:', error);
-            // En caso de error, volvemos al modo demo
+            
             this.loadMockStats();
             this.isDemoMode.set(true);
         });

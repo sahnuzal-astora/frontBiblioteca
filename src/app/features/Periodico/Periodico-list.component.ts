@@ -27,12 +27,12 @@ export class PeriodicoListComponent implements OnInit {
 
   filtroBusqueda: string = '';
 
-  // Control del modal
+  
   showModal = false;
   isEditMode = false;
   editingPeriodico: Periodico | null = null;
 
-  // Formulario reactivo
+  
   periodicoForm: FormGroup;
 
   constructor(
@@ -51,7 +51,7 @@ export class PeriodicoListComponent implements OnInit {
     this.cargarPeriodicos();
   }
 
-  // 🔹 Cargar todos los periódicos
+  
   cargarPeriodicos(): void {
     this.periodicoService.getPeriodicos({ page: 1, limit: 100 }).subscribe({
       next: (res: any) => {
@@ -62,7 +62,7 @@ export class PeriodicoListComponent implements OnInit {
     });
   }
 
-  // 🔹 Filtro en tiempo real
+  
   onFilterChange(): void {
     const filtro = this.filtroBusqueda.trim().toLowerCase();
     if (!filtro) {
@@ -74,7 +74,7 @@ export class PeriodicoListComponent implements OnInit {
     );
   }
 
-  // 🔹 Abrir modal para crear nuevo periódico
+  
   openCreateModal(): void {
     this.isEditMode = false;
     this.editingPeriodico = null;
@@ -87,7 +87,7 @@ export class PeriodicoListComponent implements OnInit {
     this.showModal = true;
   }
 
-  // 🔹 Abrir modal para editar periódico existente
+  
   openEditModal(periodico: Periodico): void {
     this.isEditMode = true;
     this.editingPeriodico = periodico;
@@ -99,13 +99,13 @@ export class PeriodicoListComponent implements OnInit {
     this.showModal = true;
   }
 
-  // 🔹 Cerrar modal
+  
   closeModal(): void {
     this.showModal = false;
     this.editingPeriodico = null;
   }
 
-  // 🔹 Guardar (crear o actualizar)
+  
   savePeriodico(): void {
     if (this.periodicoForm.invalid) {
       this.periodicoForm.markAllAsTouched();
@@ -115,7 +115,7 @@ export class PeriodicoListComponent implements OnInit {
     const formValue = this.periodicoForm.value;
 
     if (this.isEditMode && this.editingPeriodico) {
-      // 🟦 Actualizar periódico
+      
       if (!formValue.id_usuario_edita) {
         alert('Debe ingresar un UUID para "id_usuario_edita"');
         return;
@@ -160,7 +160,7 @@ export class PeriodicoListComponent implements OnInit {
     }
   }
 
-  // 🔹 Eliminar periódico
+  
   deletePeriodico(id: string): void {
     if (!confirm('¿Seguro deseas eliminar este periódico?')) return;
 

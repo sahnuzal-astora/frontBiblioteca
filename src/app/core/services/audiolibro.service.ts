@@ -25,7 +25,7 @@ export class AudiolibroService {
   constructor(private apiService: ApiService) {}
 
   /**
-   * ✅ Obtiene todos los audiolibros con paginación y filtros
+   *  Obtiene todos los audiolibros con paginación y filtros
    */
   getAudiolibros(
     pagination: PaginationParams,
@@ -35,28 +35,28 @@ export class AudiolibroService {
   }
 
   /**
-   * ✅ Obtiene un audiolibro por ID
+   *  Obtiene un audiolibro por ID
    */
   getAudiolibroById(id: string): Observable<ApiResponse<Audiolibro>> {
     return this.apiService.get<Audiolibro>(`${this.endpoint}/${id}`);
   }
 
   /**
-   * ✅ Crea un nuevo audiolibro
+   *  Crea un nuevo audiolibro
    */
   createAudiolibro(data: CreateAudiolibroRequest): Observable<ApiResponse<Audiolibro>> {
     return this.apiService.post<Audiolibro>(this.endpoint, data);
   }
 
   /**
-   * ✅ Actualiza un audiolibro existente
+   *  Actualiza un audiolibro existente
    */
   updateAudiolibro(id: string, data: UpdateAudiolibroRequest): Observable<ApiResponse<Audiolibro>> {
     return this.apiService.put<Audiolibro>(`${this.endpoint}/${id}`, data);
   }
 
   /**
-   * ✅ Elimina un audiolibro
+   *  Elimina un audiolibro
    */
   deleteAudiolibro(id: string): Observable<ApiResponse<void>> {
     return this.apiService.delete<void>(`${this.endpoint}/${id}`);

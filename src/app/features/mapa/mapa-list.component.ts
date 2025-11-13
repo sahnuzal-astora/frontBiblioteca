@@ -107,7 +107,7 @@ export class MapaListComponent implements OnInit {
 
     const value = this.mapaForm.value;
 
-    // ✅ EDITAR
+    
     if (this.isEditMode && this.editingMapa) {
 
       if (!value.id_usuario_edita) {
@@ -133,7 +133,7 @@ export class MapaListComponent implements OnInit {
         });
 
     } else {
-      // ✅ CREAR
+      
 
       if (!value.id_usuario_crea) {
         alert('Debe ingresar un UUID para id_usuario_crea');

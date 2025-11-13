@@ -16,10 +16,10 @@ export class ProductoListComponent implements OnInit {
   productosFiltrados: Producto[] = [];
   loading = false;
 
-  // 🔍 Filtro (por título o ID)
+  
   filtroBusqueda: string = '';
 
-  // 🪟 Control modal
+  
   showModal = false;
   isEditMode = false;
   editingProducto: Producto | null = null;
@@ -36,7 +36,7 @@ export class ProductoListComponent implements OnInit {
       anio: [new Date().getFullYear(), [Validators.required, Validators.min(0)]],
       disponible: [true],
       id_usuario_crea: [''],
-      id_usuario_edita: [''] // solo requerido al editar
+      id_usuario_edita: [''] 
     });
   }
 
@@ -44,7 +44,7 @@ export class ProductoListComponent implements OnInit {
     this.cargarProductos();
   }
 
-  /** 🔄 Cargar productos */
+  
   cargarProductos(): void {
     this.loading = true;
     this.productoService.getProductos({ page: 1, limit: 100 }).subscribe({
@@ -60,7 +60,7 @@ export class ProductoListComponent implements OnInit {
     });
   }
 
-  /** 🔍 Filtrar por título o ID */
+  
   onFilterChange(): void {
     const filtro = this.filtroBusqueda.trim().toLowerCase();
 
@@ -75,7 +75,7 @@ export class ProductoListComponent implements OnInit {
     );
   }
 
-  /** 🆕 Crear */
+  
   openCreateModal(): void {
     this.isEditMode = false;
     this.editingProducto = null;
@@ -90,7 +90,7 @@ export class ProductoListComponent implements OnInit {
     this.showModal = true;
   }
 
-  /** ✏️ Editar */
+  
   openEditModal(producto: Producto): void {
     this.isEditMode = true;
     this.editingProducto = producto;
@@ -99,18 +99,18 @@ export class ProductoListComponent implements OnInit {
       autor: producto.autor,
       anio: producto.anio,
       disponible: producto.disponible,
-      id_usuario_edita: '' // vacío al abrir el modal
+      id_usuario_edita: '' 
     });
     this.showModal = true;
   }
 
-  /** ❌ Cerrar modal */
+  
   closeModal(): void {
     this.showModal = false;
     this.editingProducto = null;
   }
 
-  /** 💾 Guardar producto */
+  
   saveProducto(): void {
     if (this.productoForm.invalid) {
       this.productoForm.markAllAsTouched();
@@ -167,7 +167,7 @@ export class ProductoListComponent implements OnInit {
     }
   }
 
-  /** 🗑️ Eliminar */
+  
   deleteProducto(id: string): void {
     if (confirm('¿Seguro que deseas eliminar este producto?')) {
       this.productoService.deleteProducto(id).subscribe({

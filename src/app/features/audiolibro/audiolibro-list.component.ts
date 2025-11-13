@@ -17,7 +17,7 @@ export class AudiolibroListComponent implements OnInit {
   audiolibros: Audiolibro[] = [];
   audiolibrosFiltrados: Audiolibro[] = [];
 
-  // ✅ SOLO filtro por ID
+  
   filtroBusqueda: string = '';
 
   showModal = false;

@@ -26,7 +26,7 @@ export class LibroService {
   constructor(private apiService: ApiService) {}
 
   /**
-   * ✅ Obtiene todos los libros con paginación y filtros
+   *  Obtiene todos los libros con paginación y filtros
    */
   getLibros(
     pagination: PaginationParams,
@@ -36,28 +36,28 @@ export class LibroService {
   }
 
   /**
-   * ✅ Obtiene un libro por ID
+   *  Obtiene un libro por ID
    */
   getLibroById(id: string): Observable<ApiResponse<Libro>> {
     return this.apiService.get<Libro>(`${this.endpoint}/${id}`);
   }
 
   /**
-   * ✅ Crea un nuevo libro
+   *  Crea un nuevo libro
    */
   createLibro(data: CreateLibroRequest): Observable<ApiResponse<Libro>> {
     return this.apiService.post<Libro>(this.endpoint, data);
   }
 
   /**
-   * ✅ Actualiza un libro existente
+   *  Actualiza un libro existente
    */
   updateLibro(id: string, data: UpdateLibroRequest): Observable<ApiResponse<Libro>> {
     return this.apiService.put<Libro>(`${this.endpoint}/${id}`, data);
   }
 
   /**
-   * ✅ Elimina un libro
+   *  Elimina un libro
    */
   deleteLibro(id: string): Observable<ApiResponse<void>> {
     return this.apiService.delete<void>(`${this.endpoint}/${id}`);

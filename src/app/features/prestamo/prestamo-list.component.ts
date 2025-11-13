@@ -16,10 +16,10 @@ export class PrestamoListComponent implements OnInit {
   prestamosFiltrados: Prestamo[] = [];
   loading = false;
 
-  // 🔍 Filtros
+  
   filtroUsuarioId: string = '';
   filtroProductoId: string = '';
-  filtroDevuelto: string = ''; // "", "true", "false"
+  filtroDevuelto: string = ''; 
 
   constructor(private prestamoService: PrestamoService) {}
 
@@ -27,7 +27,7 @@ export class PrestamoListComponent implements OnInit {
     this.cargarPrestamos();
   }
 
-  /** 🔄 Cargar préstamos desde el servicio */
+  
   cargarPrestamos(): void {
   this.loading = true;
   const filters: PrestamoFilters = {};
@@ -38,7 +38,7 @@ export class PrestamoListComponent implements OnInit {
 
   this.prestamoService.getPrestamos({ page: 1, limit: 100 }, filters).subscribe({
     next: (res) => {
-      // si res tiene data
+      
       if ('data' in res) {
         this.prestamos = res.data;
       } else {
@@ -55,7 +55,7 @@ export class PrestamoListComponent implements OnInit {
   }
 
 
-  /** 🔍 Filtrar en memoria */
+  
   onFilterChange(): void {
     this.prestamosFiltrados = this.prestamos.filter(p => {
       const matchUsuario = this.filtroUsuarioId ? p.usuario_id.includes(this.filtroUsuarioId) : true;

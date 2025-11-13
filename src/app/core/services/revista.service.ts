@@ -11,7 +11,7 @@ import {
 
 import {
     ApiResponse,
-    PaginatedResponse, // <-- Necesitas este tipo
+    PaginatedResponse, 
     PaginationParams
 } from '../models/api-response.model';
 
@@ -26,10 +26,6 @@ export class RevistaService {
 
     constructor(private apiService: ApiService) {}
 
-    /**
-     * ✅ Obtiene todas las revistas con paginación y filtros
-     * CORRECCIÓN: Tipo de retorno similar a AudiolibroService
-     */
     getRevistas(
         pagination: PaginationParams,
         filters?: RevistaFilters
@@ -38,28 +34,28 @@ export class RevistaService {
     }
 
     /**
-     * ✅ Obtiene una revista por ID
+     *  Obtiene una revista por ID
      */
     getRevistaById(id: string): Observable<ApiResponse<Revista>> {
         return this.apiService.get<Revista>(`${this.endpoint}/${id}`);
     }
 
     /**
-     * ✅ Crea una nueva revista
+     *  Crea una nueva revista
      */
     createRevista(data: CreateRevistaRequest): Observable<ApiResponse<Revista>> {
         return this.apiService.post<Revista>(this.endpoint, data);
     }
 
     /**
-     * ✅ Actualiza una revista existente
+     *  Actualiza una revista existente
      */
     updateRevista(id: string, data: UpdateRevistaRequest): Observable<ApiResponse<Revista>> {
         return this.apiService.put<Revista>(`${this.endpoint}/${id}`, data);
     }
 
     /**
-     * ✅ Elimina una revista
+     *  Elimina una revista
      */
     deleteRevista(id: string): Observable<ApiResponse<void>> {
         return this.apiService.delete<void>(`${this.endpoint}/${id}`);

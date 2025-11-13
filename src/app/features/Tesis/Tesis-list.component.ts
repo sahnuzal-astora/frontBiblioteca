@@ -42,7 +42,7 @@ export class TesisListComponent implements OnInit {
     this.cargarTesis();
   }
 
-  // 🔄 Obtener lista de tesis
+  
   cargarTesis(): void {
     this.tesisService.getTesis().subscribe({
       next: (res: any) => {
@@ -53,7 +53,7 @@ export class TesisListComponent implements OnInit {
     });
   }
 
-  // 🔍 Filtrar por id_tesis o universidad
+  
   onFilterChange(): void {
     const filtro = this.filtroBusqueda.trim().toLowerCase();
 
@@ -68,7 +68,7 @@ export class TesisListComponent implements OnInit {
     );
   }
 
-  // ➕ Abrir modal de creación
+  
   openCreateModal(): void {
     this.isEditMode = false;
     this.editingTesis = null;
@@ -85,7 +85,7 @@ export class TesisListComponent implements OnInit {
     document.body.classList.add('modal-open');
   }
 
-  // ✏️ Abrir modal de edición
+  
   openEditModal(tesis: Tesis & { director?: string }): void {
     this.isEditMode = true;
     this.editingTesis = tesis;
@@ -103,7 +103,7 @@ export class TesisListComponent implements OnInit {
     document.body.classList.add('modal-open');
   }
 
-  // ❌ Cerrar modal
+  
   closeModal(): void {
     this.showModal = false;
     this.editingTesis = null;
@@ -111,7 +111,7 @@ export class TesisListComponent implements OnInit {
     document.body.classList.remove('modal-open');
   }
 
-  // 💾 Guardar o actualizar
+  
   saveTesis(): void {
     if (this.tesisForm.invalid) {
       this.tesisForm.markAllAsTouched();
@@ -121,7 +121,7 @@ export class TesisListComponent implements OnInit {
     const value = this.tesisForm.value;
 
     if (this.isEditMode && this.editingTesis) {
-      // 🟣 Actualizar
+      
       if (!value.id_usuario_edita) {
         alert('Debe ingresar un UUID para id_usuario_edita');
         return;
@@ -144,7 +144,7 @@ export class TesisListComponent implements OnInit {
       });
 
     } else {
-      // 🟢 Crear nueva
+      
       if (!value.id_usuario_crea) {
         alert('Debe ingresar un UUID para id_usuario_crea');
         return;
@@ -169,7 +169,7 @@ export class TesisListComponent implements OnInit {
     }
   }
 
-  // 🗑️ Eliminar tesis
+  
   deleteTesis(id: string): void {
     if (!confirm('¿Seguro deseas eliminar esta tesis?')) return;
 

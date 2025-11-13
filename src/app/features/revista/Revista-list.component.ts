@@ -31,7 +31,7 @@ export class RevistaListComponent implements OnInit {
     this.cargarRevistas();
   }
 
-  // ✅ Cargar revistas desde API
+  
   cargarRevistas(): void {
     this.revistaService.getRevistas({ page: 1, limit: 50 }).subscribe({
       next: res => {
@@ -42,7 +42,7 @@ export class RevistaListComponent implements OnInit {
     });
   }
 
-  // 🔍 Filtrar por ID o edición
+  
   filtrarRevistas(): void {
     const id = this.filtroIdRevista.trim().toLowerCase();
     const edicion = this.filtroEdicion.trim().toLowerCase();
@@ -53,7 +53,7 @@ export class RevistaListComponent implements OnInit {
     );
   }
 
-  // ➕ Crear revista
+  
   openCreateModal(): void {
     this.revistaForm = {};
     this.isEditMode = false;
@@ -61,7 +61,7 @@ export class RevistaListComponent implements OnInit {
     this.showModal = true;
   }
 
-  // ✏️ Editar revista
+  
   openEditModal(revista: Revista): void {
     this.revistaForm = { ...revista };
     this.isEditMode = true;
@@ -69,13 +69,13 @@ export class RevistaListComponent implements OnInit {
     this.showModal = true;
   }
 
-  // ❌ Cerrar modal
+  
   closeModal(): void {
     this.showModal = false;
     this.editingRevista = null;
   }
 
-  // 💾 Guardar (crear o actualizar)
+  
   saveRevista(): void {
     if (this.isEditMode && this.editingRevista) {
       if (!this.revistaForm.id_usuario_edita) {
@@ -121,7 +121,7 @@ export class RevistaListComponent implements OnInit {
     }
   }
 
-  // 🗑️ Eliminar revista
+  
   deleteRevista(idRevista: string): void {
     if (!confirm('¿Seguro que deseas eliminar esta revista?')) return;
 

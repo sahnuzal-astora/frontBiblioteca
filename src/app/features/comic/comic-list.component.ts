@@ -32,7 +32,7 @@ export class ComicListComponent implements OnInit {
     this.comicForm = this.fb.group({
       ilustrador: ['', Validators.required],
       editorial: ['', Validators.required],
-      volumen: ['', Validators.required],    // ✅ string
+      volumen: ['', Validators.required],    
       producto_id: ['', Validators.required],
       id_usuario_crea: [''],
       id_usuario_edita: ['']
@@ -46,7 +46,6 @@ export class ComicListComponent implements OnInit {
   cargarComics(): void {
     this.comicService.getComics({ page: 1, limit: 100 }).subscribe({
       next: (res: any) => {
-        // ✅ FastAPI retorna lista simple sin metadata
         this.comics = res.data || res;
         this.comicsFiltrados = [...this.comics];
       },

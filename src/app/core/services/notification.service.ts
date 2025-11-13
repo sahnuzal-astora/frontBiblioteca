@@ -70,7 +70,7 @@ export class NotificationService {
     const currentNotifications = this.notificationsSubject.value;
     this.notificationsSubject.next([...currentNotifications, notification]);
 
-    // Auto-remover la notificación después del tiempo especificado
+    
     if (notification.duration && notification.duration > 0) {
       setTimeout(() => {
         this.removeNotification(notification.id);

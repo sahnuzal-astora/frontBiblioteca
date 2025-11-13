@@ -5,7 +5,7 @@
       <button class="btn btn-success" (click)="openCreateModal()">➕ Nuevo Producto</button>
     </div>
 
-    <!-- 🔍 Barra de búsqueda -->
+    
     <div class="filter-bar mt-2">
       <input
         type="text"
@@ -16,7 +16,7 @@
       />
     </div>
 
-    <!-- 📋 Tabla de productos -->
+    
     <table class="table table-striped mt-3">
       <thead>
         <tr>
@@ -56,7 +56,7 @@
     </table>
   </div>
 
-  <!-- 🪟 Modal -->
+  
   <div
     class="modal fade show d-block"
     *ngIf="showModal"
@@ -67,7 +67,7 @@
       <div class="modal-content p-4">
         <h3>{{ isEditMode ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
 
-        <!-- ✅ Formulario -->
+        
         <form [formGroup]="productoForm" (ngSubmit)="saveProducto()">
           <div class="form-group">
             <label for="titulo">Título</label>
@@ -112,7 +112,7 @@
             <label for="disponible" class="form-check-label">Disponible</label>
           </div>
 
-          <!-- Solo al crear -->
+          
           <div class="form-group mt-3" *ngIf="!isEditMode">
             <label for="id_usuario_crea">ID Usuario Creador</label>
             <input
@@ -124,7 +124,7 @@
             />
           </div>
 
-          <!-- Solo al editar -->
+          
           <div class="form-group mt-3" *ngIf="isEditMode">
             <label for="id_usuario_edita">ID Usuario Editor</label>
             <input
@@ -136,7 +136,7 @@
             />
           </div>
 
-          <!-- Botones -->
+          
           <div class="mt-3 d-flex justify-content-end gap-2">
             <button type="submit" class="btn btn-primary">
               {{ isEditMode ? 'Actualizar' : 'Guardar' }}

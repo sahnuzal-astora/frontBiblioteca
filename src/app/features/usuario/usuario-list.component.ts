@@ -16,15 +16,15 @@ export class UsuarioListComponent implements OnInit {
   usuariosFiltrados: Usuario[] = [];
   loading = false;
 
-  // 🔹 Filtro por ID
+ 
   filtroId: string = '';
 
-  // 🔹 Control de modal
+  
   showModal = false;
   isEditMode = false;
   editingUsuario: Usuario | null = null;
 
-  // 🔹 Formulario reactivo
+  
   usuarioForm: FormGroup;
 
   constructor(
@@ -35,7 +35,7 @@ export class UsuarioListComponent implements OnInit {
       nombre: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       telefono: [''],
-      contrasena_hash: [''], // solo se usa al crear
+      contrasena_hash: [''], 
       activo: [true],
       es_admin: [false]
     });
@@ -45,7 +45,7 @@ export class UsuarioListComponent implements OnInit {
     this.cargarUsuarios();
   }
 
-  /** 🔄 Cargar usuarios del backend */
+  
   cargarUsuarios(): void {
     this.loading = true;
     this.usuarioService.getUsuarios({ page: 1, limit: 100 }).subscribe({
@@ -61,7 +61,7 @@ export class UsuarioListComponent implements OnInit {
     });
   }
 
-  /** 🔍 Filtrar por ID */
+  
   aplicarFiltros(): void {
     const idFiltro = this.filtroId.trim();
 
@@ -84,7 +84,7 @@ export class UsuarioListComponent implements OnInit {
     this.usuariosFiltrados = [...this.usuarios];
   }
 
-  /** 🆕 Abrir modal para crear un nuevo usuario */
+  
   openCreateModal(): void {
     this.isEditMode = false;
     this.editingUsuario = null;
@@ -99,7 +99,7 @@ export class UsuarioListComponent implements OnInit {
     this.showModal = true;
   }
 
-  /** ✏️ Abrir modal para editar un usuario existente */
+  
   openEditModal(usuario: Usuario): void {
     this.isEditMode = true;
     this.editingUsuario = usuario;
@@ -113,13 +113,13 @@ export class UsuarioListComponent implements OnInit {
     this.showModal = true;
   }
 
-  /** ❌ Cerrar modal */
+  
   closeModal(): void {
     this.showModal = false;
     this.editingUsuario = null;
   }
 
-  /** 💾 Guardar o actualizar usuario */
+  
   saveUsuario(): void {
     if (this.usuarioForm.invalid) {
       this.usuarioForm.markAllAsTouched();
@@ -129,7 +129,7 @@ export class UsuarioListComponent implements OnInit {
     const formValue = this.usuarioForm.value;
 
     if (this.isEditMode && this.editingUsuario) {
-      // 🔄 Actualizar usuario
+      
       const updateData: UpdateUsuarioRequest = {
         nombre: formValue.nombre,
         email: formValue.email,
@@ -150,7 +150,7 @@ export class UsuarioListComponent implements OnInit {
         }
       });
     } else {
-      // 🆕 Crear nuevo usuario
+      
       const createData: CreateUsuarioRequest = {
         nombre: formValue.nombre,
         email: formValue.email,
@@ -174,9 +174,9 @@ export class UsuarioListComponent implements OnInit {
     }
   }
 
-  /** 🗑️ Eliminar usuario */
+  
   deleteUsuario(id: string): void {
-  console.log('🧩 ID recibido para eliminar:', id); // 👈 Agrega esto
+  console.log('🧩 ID recibido para eliminar:', id); 
 
   if (confirm('¿Seguro que deseas eliminar este usuario?')) {
     this.usuarioService.deleteUsuario(id).subscribe({

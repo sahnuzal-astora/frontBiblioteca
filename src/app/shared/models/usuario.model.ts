@@ -2,10 +2,10 @@
  * Modelo para la entidad Usuario
  */
 export interface Usuario {
-  id_usuario: string;          // 🟢 reemplaza 'id'
+  id_usuario: string;          
   nombre: string;
   email: string;
-  telefono: string;           // 🟢 nuevo campo
+  telefono: string;           
   activo: boolean;
   es_admin: boolean;
 }
@@ -17,7 +17,7 @@ export interface CreateUsuarioRequest {
   email: string;
   password: string;
   nombre: string;
-  telefono: string;  // ← opcional
+  telefono: string;  
   esadmin: boolean;
   contrasena_hash: string; 
 }
@@ -29,9 +29,9 @@ export interface CreateUsuarioRequest {
 export interface UpdateUsuarioRequest {
   nombre: string;
   email: string;
-  telefono: string;          // 🟢 nuevo campo
+  telefono: string;          
   activo: boolean;
-  es_admin: boolean;          // 🟢 opcional para permitir cambio
+  es_admin: boolean;          
 }
 
 
@@ -41,6 +41,6 @@ export interface UpdateUsuarioRequest {
 export interface UsuarioFilters {
   email?: string;
   nombre?: string;
-  telefono?: string;          // 🟢 nuevo filtro posible
+  telefono?: string;          
   activo?: boolean | string;
 }

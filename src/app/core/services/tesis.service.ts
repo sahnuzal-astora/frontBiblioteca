@@ -12,7 +12,7 @@ import {
   providedIn: 'root'
 })
 export class TesisService {
-  private apiUrl = 'http://localhost:8000/tesis'; // 🔧 Ajusta si tu endpoint es diferente
+  private apiUrl = 'http://localhost:8000/tesis'; 
 
   constructor(private http: HttpClient) {}
 
@@ -32,28 +32,28 @@ export class TesisService {
   }
 
   /**
-   * 🔹 Obtener una tesis por su ID
+   *  Obtener una tesis por su ID
    */
   getTesisById(id: string): Observable<Tesis> {
     return this.http.get<Tesis>(`${this.apiUrl}/${id}`);
   }
 
   /**
-   * 🔹 Crear una nueva tesis
+   *  Crear una nueva tesis
    */
   createTesis(data: CreateTesisRequest): Observable<Tesis> {
     return this.http.post<Tesis>(this.apiUrl + '/', data);
   }
 
   /**
-   * 🔹 Actualizar una tesis existente
+   *  Actualizar una tesis existente
    */
   updateTesis(id: string, data: UpdateTesisRequest): Observable<Tesis> {
     return this.http.put<Tesis>(`${this.apiUrl}/${id}/`, data);
   }
 
   /**
-   * 🔹 Eliminar una tesis
+   *  Eliminar una tesis
    */
   deleteTesis(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}/`);
