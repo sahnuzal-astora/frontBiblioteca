@@ -1,0 +1,56 @@
+.prestamo-list {
+  .card {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 1000px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+
+    input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f8f9fa;
+      text-align: left;
+    }
+  }
+
+  .btn {
+    margin: 0 4px;
+  }
+
+  .text-success {
+    color: green;
+  }
+
+  .text-danger {
+    color: red;
+  }
+}
